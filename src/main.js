@@ -30,7 +30,7 @@ const i18n = new VueI18n({
 let set_token = localStorage.getItem("set_token")
 // console.log(set_token)
 if (set_token != null) {
-    axios.defaults.headers.common['Authorization'] = set_token
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + set_token
 }
 
 //使用钩子函数对路由进行权限跳转
