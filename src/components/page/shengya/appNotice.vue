@@ -62,7 +62,7 @@
 							style="width: 70%;margin: 0 auto;">
 						<el-form-item class="label_awarn" label="公告图片:">
 							
-							<el-upload
+							<!-- <el-upload
 							  :action="imgUpsite"
 							  list-type="picture-card"
 							  :on-preview="handlePictureCardPreview"
@@ -75,8 +75,19 @@
 							  >
 							  <img v-if="form.noticeUrl != null"  style="width:146px;height: 146px;display: inline-block;" :src="form.noticeUrl" alt="">
 							  <i class="el-icon-plus" v-if="form.noticeUrl == null"></i>
-							</el-upload>
-							
+							</el-upload> -->
+
+							<!-- 
+								公用单图上传组件
+								dir 对应传到 oss 指定目录
+								upload-success 上传成功事件
+								change 值变化事件
+							 -->
+							<uploader
+								dir="test/upload/img"
+								v-model="form.noticeUrl"
+								@upload-success="handleSuccess"
+							></uploader>
 						</el-form-item>
 							
 						<el-form-item class="label_awarn" v-if="form.jumpType == 12" label="商品id" >
@@ -147,10 +158,13 @@
 </template>
 
 <script>
-	
+	import Uploader from '@/components/common/Uploader'
    import { post,get } from '../../../api/index';
     export default {
         name: 'centCommission',
+        components: {
+        	Uploader
+        },
         data() {
             return {
                 tableData: [],
@@ -473,7 +487,7 @@
 			},
 			
 			//上传图片
-			handleSuccess(response, file, fileList){
+			/*handleSuccess(response, file, fileList){
 				//成功的回调函数
 				console.log(response.key)
 				this.qiniuimage = this.imgSite +"/"+ response.key
@@ -483,6 +497,9 @@
 					let upload = document.getElementsByClassName("el-upload--picture-card")
 					upload[0].style.display = "none"
 				}
+			},*/
+			handleSuccess (data) {
+				console.log(data)
 			},
 			handleRemove(file, fileList) {
 				//删除的回调函数
