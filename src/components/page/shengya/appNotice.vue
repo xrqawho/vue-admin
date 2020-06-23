@@ -21,20 +21,25 @@
                 <el-table-column prop="noticeTitle" label="公告标题"  >
                 </el-table-column>
                 <el-table-column prop="noticeUrl" label="公告图片" >
-					<template slot-scope="scope">
+					<!-- <template slot-scope="scope">
 					    <img :src="scope.row.noticeUrl+'?'+new Date().getTime()" width="90%" alt="">
 					    
-					</template>
+					</template> -->
                 </el-table-column>
-                <el-table-column prop="noticeBeginTime" label="公告开始时间">
+                <el-table-column prop="noticeStartTime" label="公告开始时间">
                 </el-table-column>
                 <el-table-column prop="noticeEndTime" label="公告结束时间">
                 </el-table-column>
 				<el-table-column prop="noticeSort" label="公告排序">
 				</el-table-column>
-                <el-table-column prop="enable" label="公告状态" >
+				<el-table-column prop="enabled" label="公告启用状态" >
 					<template slot-scope="scope">
-					    {{funPictureStatus(scope.row.enable)}}
+					    {{enabledStatus(scope.row.enabled)}}
+					</template>
+				</el-table-column>
+                <el-table-column prop="noticeStatus" label="公告状态" >
+					<template slot-scope="scope">
+					    {{funPictureStatus(scope.row.noticeStatus)}}
 					</template>
                 </el-table-column>
                 
@@ -55,34 +60,13 @@
          <!-- 编辑弹出框 -->
 			<el-dialog :title="judgeTitle"
 						:visible.sync="editVisible"
-						@close = "dialogClose"
+						
 						 width="40%">
 					<el-form :model="form"
 							label-width="140px"
 							style="width: 70%;margin: 0 auto;">
 						<el-form-item class="label_awarn" label="公告图片:">
 							
-							<!-- <el-upload
-							  :action="imgUpsite"
-							  list-type="picture-card"
-							  :on-preview="handlePictureCardPreview"
-							  :on-remove="handleRemove"
-							  :on-success = "handleSuccess"
-							  ref = "upload"
-							  :limit="1"
-							  :data="qiniu"
-							  accept=".png,.bmp,.jpg,.gif,"
-							  >
-							  <img v-if="form.noticeUrl != null"  style="width:146px;height: 146px;display: inline-block;" :src="form.noticeUrl" alt="">
-							  <i class="el-icon-plus" v-if="form.noticeUrl == null"></i>
-							</el-upload> -->
-
-							<!-- 
-								公用单图上传组件
-								dir 对应传到 oss 指定目录
-								upload-success 上传成功事件
-								change 值变化事件
-							 -->
 							<uploader
 								dir="test/upload/img"
 								v-model="form.noticeUrl"
@@ -118,8 +102,8 @@
 							
 							
 						<el-form-item class="label_awarn" label="公告状态:" >
-							<label><input v-model="form.enable" type="radio" value="1" >启用</label>
-							<label><input v-model="form.enable" type="radio" value="0" >禁用</label>
+							<label><input v-model="form.enabled" type="radio" value="1" >启用</label>
+							<label><input v-model="form.enabled" type="radio" value="0" >禁用</label>
 						</el-form-item >
 							
 						
@@ -178,18 +162,6 @@
                 delVisible: false,
 				dialogVisible: false,//图片放大
 				dialogImageUrl: "",//图片放大的url
-				codeList:[
-					{name:"1（今日爆款数据）",value:1},
-					{name:"2（白菜专区数据）",value:2},
-					{name:"3（聚划算数据）",value:3},
-					{name:"4（淘抢购数据）",value:4},
-					{name:"5",value:5},
-					{name:"6",value:6},
-					{name:"7",value:7},
-					{name:"8",value:8},
-					{name:"9",value:9},
-					{name:"10",value:10}
-				],
 				
                 form: {
 					
@@ -209,13 +181,6 @@
                 	itemId: "",
                 },
 				StartEndTime:null,
-				//上传图片获取的参数
-				imgToken:null,//token
-				imgSite:null,//site七牛云需要拼接的url
-				imgUpsite:null,//上传图片需要的地址
-				qiniu:{
-					token:null,
-				},
 				
 				fileListLength:0,//图片文件列表的长度
 				page:{
@@ -228,24 +193,6 @@
 				judge: "",
 				judgeTitle: "新增",
 				list:[],
-				pictureType:[
-					{ name: '首页banner广告位', value: 1 },
-					{ name: '新人免单banner区', value: 2 },
-					{ name: '淘宝天猫活动区', value: 3 },
-					{ name: '广告弹窗', value: 4 },
-					{ name: '首页海报', value: 5 },//备注6不可用，王跃说的
-					{ name: '首页浮窗', value: 7 },
-				],
-				linkTypeList:[
-					{ name: '今日爆款', value: 1 },
-					{ name: '白菜专区', value: 2 },
-					{ name: '新人专享（免单）', value: 3 },
-					{ name: '朋友圈', value: 4 },
-					{ name: '邀请赚钱', value: 5 },
-					{ name: 'H5链接', value: 11 },
-					{ name: '商品详情', value: 12 },
-					{ name: '省钱教程', value: 13 },
-				],
 				pictureState:[
 					{ name: '未使用', value: 1 },
 					{ name: '使用', value: 2 },
@@ -254,7 +201,6 @@
         },
         created() {
             this.getData();
-			this.getImgData();
         },
         computed: {
             data() {
@@ -281,11 +227,10 @@
                 //     console.log(this.tableData)
                 // })
                 let vue = this
-                post("sy/appNotice/list",{
+                get("server-admin/appNotice/list",{
                    
-                        pageNum:pageNum,
-                        pageSize: vue.page.pageSize,
-                        total: vue.page.total, 
+                        pageNum:vue.page.pageNum,
+                        pageSize: vue.page.pageSize
                    
                 })
                 .then(function (data) {
@@ -304,31 +249,26 @@
                     console.log(error);
                 });
             },
-			//获取上传图片的参数
-			getImgData(){
-			    
-			    get("web/bannerPicture/uploadPic",{
-			        params: {
-			    		
-			        }
-			    })
-			    .then((data) => {
-					this.qiniu.token = data.data.data.token;
-					this.imgSite = data.data.data.site;
-					this.imgUpsite = data.data.data.upsite;
-			    })
-			    .catch(function (error) {
-			        console.log(error);
-			    });
-			},
+			/* //获取上传图片的参数
+			
 			dialogClose(){
 				console.log(this.$refs)
 				this.$refs.upload.clearFiles()
-			},
+			}, */
 			
 			funPictureStatus(value){
 				//平台
 				// console.log(value)
+				switch(value) {
+					 case 1:
+						return "已过期";
+					 case 0:
+						return "正常";
+					 default:
+						return "未知";
+				}
+			},
+			enabledStatus(value){
 				switch(value) {
 					 case 1:
 						return "启用";
@@ -371,7 +311,7 @@
 					this.form = {
 						
 						id:"",
-						enable:1,
+						enabled:1,
 						noticeUrl:"http://qiniuimage.shenggongzi.cn/FjmmVxzQS3vQsvvwEUe7Ofg_b2TO?1584084840146",
 						noticeTitle:"",
 						noticeBeginTime:"",
@@ -384,17 +324,17 @@
 					console.log(row)
 					this.judge = index;
 					this.judgeTitle = "编辑"
-					console.log(row.goodsPictureUrl)
 					this.form = {
 						
-						enable: row.enable,
+						enabled: row.enabled,
 						id:row.id,
 					    noticeUrl: row.noticeUrl,
 					    noticeTitle: row.noticeTitle,
 						noticeSort: row.noticeSort,
 					}
 					this.dialogImageUrl = row.noticeUrl;
-					this.StartEndTime = [ new Date(Number(new Date(row.noticeBeginTime))) , new Date(Number(new Date(row.noticeEndTime)))]
+					this.StartEndTime =  [ new Date(Number(new Date(row.noticeStartTime))) , new Date(Number(new Date(row.noticeEndTime)))],
+					//this.StartEndTime = [ new Date(Number(new Date(row.noticeBeginTime))) , new Date(Number(new Date(row.noticeEndTime)))]
 					console.log(this.StartEndTime)
 				}
             },
@@ -485,19 +425,6 @@
 				    console.log(error);
 				});
 			},
-			
-			//上传图片
-			/*handleSuccess(response, file, fileList){
-				//成功的回调函数
-				console.log(response.key)
-				this.qiniuimage = this.imgSite +"/"+ response.key
-				this.form.noticeUrl = this.imgSite +"/"+ response.key
-				this.form.goodsPictureUrl = null
-				if (fileList.length == 1) {
-					let upload = document.getElementsByClassName("el-upload--picture-card")
-					upload[0].style.display = "none"
-				}
-			},*/
 			handleSuccess (data) {
 				console.log(data)
 			},

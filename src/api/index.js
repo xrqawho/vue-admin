@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // let base = "api"
 
-let base = "http://127.0.0.1:53010/"; //测试
+let base = "http://127.0.0.1:80/"; //测试
 
 
 export const post = (url, query) => {

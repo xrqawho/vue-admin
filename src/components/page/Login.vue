@@ -94,9 +94,6 @@
                      	  }
                      	});
                      }
-                     
-
-
                     } else {
 						//vue.verificationCodeClick()
                         vue.msg = response.data.msg

@@ -10,64 +10,56 @@
                 <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">新增</el-button>
                 条件筛选 平台：
                 <el-select v-model="select_cate" placeholder="请选择" class="handle-select mr10">
-                    <el-option key="1" label="淘宝" value="1"></el-option>
+                    <el-option key="0" label="淘宝" value="0"></el-option>
+					<el-option key="1" label="京东" value="1"></el-option>
+					<el-option key="2" label="拼多多" value="2"></el-option>
                     <!-- <el-option key="2" label="总公司" value="总公司"></el-option> -->
                 </el-select>
                 <el-input v-model="select_word" placeholder="请输入关键字查询" class="handle-input mr10"></el-input>
+				<el-input v-model="select_itemId" placeholder="请输入商品Id查询" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getData(1)">搜索</el-button>
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
 
-                <el-table-column prop="companyName" label="公司" width="100">
-                </el-table-column>
-                <el-table-column prop="goodsPictureUrl" label="商品主图" width="120">
+                <!-- <el-table-column prop="companyName" label="公司" width="100">
+                </el-table-column> -->
+                <el-table-column prop="itemPictureUrl" label="商品主图" width="120">
                     <template slot-scope="scope">
-                        <img id="goodsPicture" :src="scope.row.goodsPictureUrl" alt="">
+                        <img id="goodsPicture" :src="scope.row.itemPictureUrl" alt="">
                     </template>
                 </el-table-column>
-                <el-table-column prop="goodsName" label="商品名称">
+                <el-table-column prop="itemTitle" label="商品名称">
                 </el-table-column>
-                <el-table-column prop="goodsId" width="120" label="商品ID">
+                <el-table-column prop="itemId" width="120" label="商品ID">
                 </el-table-column>
-                <el-table-column prop="goodsPlatform" width="60" label="平台">
+                <el-table-column prop="platformType" width="60" label="平台">
                     <template slot-scope="scope">
-                        {{platform(scope.row.goodsPlatform)}}
+                        {{platform(scope.row.platformType)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="fixedAmount" width="70" label="固定返">
+                <el-table-column prop="totalOrders" width="80" label="总免单数">
                 </el-table-column>
-                <el-table-column prop="totalOrders" width="80" label="总订单数">
+                <el-table-column prop="invalidOrders" width="100" label="已领取数">
                 </el-table-column>
-                <el-table-column prop="invalidOrders" width="100" label="失效订单数">
-                </el-table-column>
-                <el-table-column prop="totalRetureAmount" width="100" label="总返佣金额">
-                </el-table-column>
-                <el-table-column prop="number" width="70" label="免单数">
+                <el-table-column prop="totalRetureAmount" width="100" label="免单总金额">
                 </el-table-column>
 
                 <el-table-column prop="freeType" label="返利类型" :formatter="rebateFormatter">
                 </el-table-column>
-                <el-table-column show-overflow-tooltip prop="freeGiftUrl" label="淘礼金url">
+                <el-table-column show-overflow-tooltip prop="freeAccount" label="免单金额">
                 </el-table-column>
 
 
                 <el-table-column prop="beginTime" label="创建时间">
-                    <template slot-scope="scope">
-                        {{ timeTransition(scope.row.beginTime)}}
-                    </template>
-
                 </el-table-column>
                 <el-table-column prop="endTime" label="结束时间">
+                </el-table-column>
+                <el-table-column prop="freeStatus" width="70" label="状态">
                     <template slot-scope="scope">
-                        {{ timeTransition(scope.row.endTime)}}
+                        {{ freeState(scope.row.freeStatus)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="goodsStatus" width="70" label="状态">
-                    <template slot-scope="scope">
-                        {{ freeState(scope.row.goodsStatus)}}
-                    </template>
-                </el-table-column>
-                <el-table-column prop="freeSerialNumber" width="60" label="序号">
+                <el-table-column prop="freeSerialNumber" width="60" label="商品详情">
                 </el-table-column>
                 <el-table-column label="操作" width="100" align="center">
                     <template slot-scope="scope">
@@ -105,8 +97,8 @@
                             :data="qiniu"
                             accept=".png,.bmp,.jpg,"
                     >
-                        <img v-if="form.goodsPictureUrl != null"
-                             style="width:146px;height: 146px;display: inline-block;" :src="form.goodsPictureUrl"
+                        <img v-if="form.itemPictureUrl != null"
+                             style="width:146px;height: 146px;display: inline-block;" :src="form.itemPictureUrl"
                              alt="">
                         <i class="el-icon-plus"></i>
                     </el-upload>
@@ -114,26 +106,19 @@
                 </el-form-item>
 
                 <el-form-item label="商品ID">
-                    <el-input v-model="form.goodsId" style="width: 150px;"></el-input>
+                    <el-input v-model="form.itemId" style="width: 150px;"></el-input>
                 </el-form-item>
 
                 <el-form-item label="商品名称">
-                    <el-input v-model="form.goodsName" style="width: 250px;"></el-input>
+                    <el-input v-model="form.itemTitle" style="width: 250px;"></el-input>
                 </el-form-item>
 
                 <el-form-item label="平台">
-                    <el-select v-model="form.goodsPlatform" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
-                        <el-option :key="1" label="淘宝" :value="1"></el-option>
+                    <el-select v-model="form.platformType" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
+                        <el-option :key="0" label="淘宝" :value="0"></el-option>
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="固定返">
-                    <el-input v-model="form.fixedAmount" style="width: 100px;"></el-input>
-                </el-form-item>
-
-                <el-form-item label="免单数">
-                    <el-input v-model="form.number" style="width: 100px;"></el-input>
-                </el-form-item>
                 <el-form-item class="label_awarn" label="返利类型">
                     <el-select v-model="form.freeType" placeholder="请选择" class="goodsPlatform mr10" style="width: 100px;">
                         <el-option :key="itme.value" v-for="itme in linkTypeList" :label="itme.name"
@@ -201,6 +186,7 @@
                 multipleSelection: [],
                 select_cate: '',
                 select_word: '',
+				select_itemId: '',
                 del_list: [],
                 is_search: false,
                 editVisible: false,
@@ -212,15 +198,13 @@
                 ],
                 form: {
                     endTime: null,//1566626222378
-                    fixedAmount: null,//"12"
-                    goodsId: null,//"12341234"
-                    goodsName: null,//"扫黄打非隧道口"
-                    goodsPictureUrl: null,//1
-                    goodsPlatform: null,//1
-                    number: null,//"1"
+                    itemId: null,//"12341234"
+                    itemTitle: null,//"扫黄打非隧道口"
+                    itemPictureUrl: null,//1
+                    platformType: null,//1
                     printUrl: null,//"http://qiniuimage.shenggongzi.cn/FlyQn6NIXoPLp-s9-uNO0VTONIjf"
                     freeType: null,
-                    freeGiftUrl: "",
+                    freeAccount: 0,
                 },
                 page: {
                     pageSize: 10,
@@ -252,7 +236,7 @@
         },
         created() {
             this.getData();
-            this.getImgData();
+            //this.getImgData();
         },
         computed: {
             data() {
@@ -276,39 +260,35 @@
                 //     console.log(this.tableData)
                 // })
                 let vue = this
-                get("web/goodsFree/findGoodsFreeByKeyWord", {
+                get("server-admin/goodsFree/list", {
                     params: {
-                        goodsPlatform: vue.select_cate,
-                        keyWord: vue.select_word,
-
-                        currentPage: pageNum,
+                        platformType: vue.select_cate,
+                        itemTitle: vue.select_word,
+						itemId:vue.select_itemId,
+                        pageNum: pageNum,
                         pageSize: vue.page.pageSize,
-                        total: vue.page.total,
                     }
                 })
                     .then(function (data) {
                         let arr = []
                         //一个数组用来接收加工后台传过来的数据
-                        console.log(data.data.data.list);
-                        vue.tableData = data.data.data.list.map(list => {
+                        console.log(data.data.data.data);
+                        vue.tableData = data.data.data.data.map(list => {
                             let json = {
-                                "companyName": list.companyName,
-                                "goodsPictureUrl": list.printUrl,
-                                "goodsName": list.goodsName,
-                                "goodsId": list.goodsId,
-                                "goodsPlatform": list.goodsPlatform,
-                                "fixedAmount": list.fixedAmount,
-                                "totalOrders": list.totalOrders,
-                                "invalidOrders": list.invalidOrders,
-                                "totalRetureAmount": list.totalRetureAmount,
-                                "number": list.number,
-                                "beginTime": list.beginTime,
-                                "endTime": list.endTime,
-                                "goodsStatus": list.goodsStatus,
-                                "freeSerialNumber": list.freeSerialNumber,
+                                "itemPictureUrl": list.itemPictureUrl,
+                                "itemTitle": list.itemTitle,
+                                "itemId": list.itemId,
+                                "platformType": list.platformType,
+                                "totalOrders": list.itemTotalNum,
+                                "invalidOrders": list.itemReceivedNum,
+                                "totalRetureAmount": list.itemTotalNum*list.freeAccount,
+                                "beginTime": list.activityBeginTime,
+                                "endTime": list.activityEndTime,
+                                "freeStatus": list.freeStatus,
+                                "freeSerialNumber": list.itemDetails,
                                 "id": list.id,
                                 "freeType": list.freeType,
-                                "freeGiftUrl": list.freeGiftUrl
+								"freeAccount":list.freeAccount
                             };
                             return json;
                         })
@@ -327,13 +307,13 @@
                 //平台
                 console.log(value)
                 switch (value) {
-                    case 1:
+                    case 0:
                         return "淘宝";
-                    case 2:
-                        return "天猫";
-                    case 3:
-                        return "京东";
                     case 4:
+                        return "天猫";
+                    case 1:
+                        return "京东";
+                    case 2:
                         return "拼多多";
                     default:
                         return "未知";
@@ -342,10 +322,12 @@
             freeState(value) {
                 //免单状态
                 switch (value) {
+                    case 0:
+                        return "正常";
                     case 1:
-                        return "已过期";
-                    case 2:
-                        return "已激活";
+                        return "已抢空";
+					case 2:
+						return "已过期";
                     default:
                         return "未知";
                 }
@@ -410,21 +392,20 @@
                     this.judge = index;
                     this.judgeTitle = "编辑"
                     //alert("row.freeType====>>>>>"+row.freeType)
-                    console.log(row.goodsPictureUrl)
+                    console.log(row.itemPictureUrl)
                     this.form = {
                         endTime: Number(row.endTime),
-                        fixedAmount: row.fixedAmount,
-                        goodsId: row.goodsId,
-                        goodsName: row.goodsName,
-                        goodsPictureUrl: row.goodsPictureUrl,
+                        itemId: row.itemId,
+                        itemTitle: row.itemTitle,
+                        itemPictureUrl: row.itemPictureUrl,
                         goodsPlatform: row.goodsPlatform,
                         number: row.number,
-                        printUrl: row.goodsPictureUrl,
+                        printUrl: row.itemPictureUrl,
                         id: row.id,
                         freeType: row.freeType,
                         freeGiftUrl: row.freeGiftUrl,
                     }
-                    this.dialogImageUrl = row.goodsPictureUrl;
+                    this.dialogImageUrl = row.itemPictureUrl;
 
 
                 }
@@ -434,7 +415,7 @@
             handleDelete(index, row) {
                 // console.log(row)
                 this.delId = row.id;
-                this.form.goodsId=row.goodsId;
+                this.form.itemId=row.itemId;
                 this.delVisible = true;
             },
             delAll() {
@@ -457,11 +438,11 @@
                 // this.$message.success(`修改第 ${this.idx+1} 行成功`);
 
 
-                delete this.form.goodsPictureUrl;
+                delete this.form.itemPictureUrl;
 
                 this.form.endTime = new Date(this.form.endTime).getTime();
                 console.log(this.form)
-                if (this.form.goodsId == null || this.form.goodsId == "") {
+                if (this.form.itemId == null || this.form.itemId == "") {
                     this.$message.error("商品ID不能为空");
                     return
                 }
@@ -484,10 +465,9 @@
                                 this.$message.success(data.data.msg);
                                 this.form = {
                                     endTime: null,
-                                    fixedAmount: null,
-                                    goodsId: null,
-                                    goodsName: null,
-                                    goodsPictureUrl: null,
+                                    itemId: null,
+                                    itemTitle: null,
+                                    itemPictureUrl: null,
                                     goodsPlatform: null,
                                     number: null,
                                     printUrl: null,
@@ -534,7 +514,7 @@
                 //alert("id="+this.form.goodsId);
                 get("web/goodsFree/deleteByGoodsId", {
                     params: {
-                        goodsId:this.form.goodsId,
+                        itemId:this.form.itemId,
                         id: this.delId,
                     }
                 })

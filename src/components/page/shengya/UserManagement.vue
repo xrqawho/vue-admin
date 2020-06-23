@@ -164,7 +164,7 @@
                 get("web/user/findUserList",{
                     params: {
 						userName: vue.select_word,
-                        currentPage: pageNum,
+                        pageNum: vue.page.pageNum,
 						pageSize: vue.page.pageSize,
 						total: vue.page.total,
                     }
