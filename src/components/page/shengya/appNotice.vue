@@ -142,6 +142,7 @@
 </template>
 
 <script>
+	import { deleteFile } from '@/api/OssUpload'
 	import Uploader from '@/components/common/Uploader'
    import { post,get } from '../../../api/index';
     export default {
@@ -180,6 +181,8 @@
 					linkType: "",
                 	itemId: "",
                 },
+                // 保存一份旧数据，用于判断图片是否进行了修改
+                oldForm: {},
 				StartEndTime:null,
 				
 				fileListLength:0,//图片文件列表的长度
@@ -332,6 +335,7 @@
 					    noticeTitle: row.noticeTitle,
 						noticeSort: row.noticeSort,
 					}
+					this.oldForm = JSON.parse(JSON.stringify(this.form))
 					this.dialogImageUrl = row.noticeUrl;
 					this.StartEndTime =  [ new Date(Number(new Date(row.noticeStartTime))) , new Date(Number(new Date(row.noticeEndTime)))],
 					//this.StartEndTime = [ new Date(Number(new Date(row.noticeBeginTime))) , new Date(Number(new Date(row.noticeEndTime)))]
@@ -341,6 +345,7 @@
             handleDelete(index, row) {
                 // this.idx = index;
                 this.id = row.id;
+                this.oldForm = { noticeUrl: row.noticeUrl }
                 this.delVisible = true;
             },
             deleteRow() {
@@ -351,6 +356,13 @@
                 })
                 .then((data) => {
                 	if (data.data.status == 200) {
+
+                		// 删除旧图片
+						deleteFile(this.oldForm.noticeUrl).then(result => {
+							if (!result.success) {
+								this.$message.error(result.msg)
+							}
+						})
                 		
                 		this.$message.success(data.data.msg);
                 		this.getData()
@@ -414,6 +426,16 @@
 				})
 				.then((data) => {
 					if (data.data.status == 200) {
+
+						// 判断图片是否一致，不一致则删除旧图片
+						if (this.form.noticeUrl !== this.oldForm.noticeUrl) {
+							deleteFile(this.oldForm.noticeUrl).then(result => {
+								if (!result.success) {
+									this.$message.error(result.msg)
+								}
+							})
+						}
+
 						this.$message.success(data.data.msg);
 						this.getData();
 						

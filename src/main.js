@@ -57,7 +57,6 @@ function open6(msg) {
 }
 // http response 响应拦截器
 axios.interceptors.response.use(response => {
-	
 	if (response.data.status == 500) {
 		open6('服务器返回500，请排查所填请求参数是否正确');
 	} else if(response.data.status == 505){
@@ -67,7 +66,6 @@ axios.interceptors.response.use(response => {
 	}
  	return response;
 },error => {
-	console.log(error.response)
  	if (error.response) {
 		
 		switch (error.response.status) {
@@ -76,6 +74,11 @@ axios.interceptors.response.use(response => {
 			console.log("失败")
 			//向前台报错
 			open6('接口请求出现异常');
+
+			case 401:
+				localStorage.removeItem('set_token')
+				router.push('/login')
+				return
 		}
 		// 返回接口返回的错误信息
 		return Promise.reject(error.response.data);
