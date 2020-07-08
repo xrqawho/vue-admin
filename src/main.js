@@ -71,9 +71,10 @@ axios.interceptors.response.use(response => {
 		switch (error.response.status) {
 			// 500，
 			case 500:
-			console.log("失败")
-			//向前台报错
-			open6('接口请求出现异常');
+				console.log("失败")
+				//向前台报错
+				open6('接口请求出现异常');
+				break
 
 			case 401:
 				localStorage.removeItem('set_token')
