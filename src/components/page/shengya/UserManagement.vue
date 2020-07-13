@@ -17,58 +17,57 @@
                 <el-table-column prop="userId"  label="用户ID" width="100">
                 </el-table-column>
 				
-                <el-table-column prop="userName" label="用户名" width="180">
+                <el-table-column prop="username" label="用户名" width="180">
                 </el-table-column>
 				
                 <el-table-column prop="userRealName" label="姓名" width="100" >
                 </el-table-column>
-				
-				<el-table-column prop="superWechatNickname" label="推荐人" >
+				 <el-table-column prop="wechatNickname" label="微信名称" width="100" >
 				</el-table-column>
-				
-                <el-table-column prop="phoneNumber" label="手机号" >
+                <el-table-column prop="mobile" label="手机号" >
                 </el-table-column>
 				
-                <el-table-column prop="alipayAccount" label="支付宝账号" >
+                <el-table-column prop="alipayAccountName" label="支付宝账号" >
                 </el-table-column>
 				
 				<el-table-column prop="relationId" label="渠道ID" >
 				</el-table-column>
 				
-				<el-table-column prop="balance" label="可提现金额" >
+				<el-table-column prop="totalAccount" label="可提现金额" >
 				</el-table-column>
 				
-				<el-table-column prop="cashBalanceAmount" label="微信可提现余额" >
+				<el-table-column prop="inviteAccount" label="邀请总金额" >
 				</el-table-column>
 				
-				<el-table-column prop="totalWithdrawalAmount" label="总提现金额" >
+				<el-table-column prop="totalGoldNum" label="总金币" >
 				</el-table-column>
 				
-				<el-table-column prop="orderNumber" label="订单数" >
+				<el-table-column prop="meInviteCode" label="我的邀请码" >
 				</el-table-column>
-				
-				<el-table-column prop="userCreateTime" label="用户注册时间" >
-					<template slot-scope="scope">
+				<el-table-column prop="superInviteCode" label="上级邀请码" >
+				</el-table-column>
+				<el-table-column prop="loginFirstDate" label="用户注册时间" >
+					<!-- <template slot-scope="scope">
 						{{timeTransition(scope.row.userCreateTime)}}
-					</template>
+					</template> -->
 				</el-table-column>
 				
-				<el-table-column prop="enable" label="状态" >
+				<!-- <el-table-column prop="enable" label="状态" >
 					<template slot-scope="scope">
 						<span v-if="scope.row.enable == 1">正常</span>
 						<span v-if="scope.row.enable == 0">已禁用</span>
 					</template>
-				</el-table-column>
+				</el-table-column> -->
 				
-				<el-table-column prop="blackScope" label="黑名单" width="150" >
+				<el-table-column prop="isBlack" label="黑名单" width="150" >
 					<template slot-scope="scope">
-						<el-button type="text" @click="blacklistUser(scope.row.userId,1)" v-if="scope.row.blackScope == 0">拉黑该用户</el-button>
-						<br v-if="scope.row.blackScope == 0">
-						<el-button type="text" @click="blacklistUser(scope.row.userId,3)" v-if="scope.row.blackScope == 0">拉黑该用户，及下级</el-button>
-						<br v-if="scope.row.blackScope == 0">
-						<el-button type="text" @click="washUser(scope.row.userId)" v-if="scope.row.blackScope == 1">洗白该用户</el-button>
-						<br v-if="scope.row.blackScope == 1">
-						<el-button type="text" @click="washUser(scope.row.userId)" v-if="scope.row.blackScope == 3">洗白该用户，及下级</el-button>
+						<el-button type="text" @click="blacklistUser(scope.row.userId,1)" v-if="scope.row.isBlack == 0">拉黑该用户</el-button>
+						<br v-if="scope.row.isBlack == 0">
+						<el-button type="text" @click="blacklistUser(scope.row.userId,3)" v-if="scope.row.isBlack == 0">拉黑该用户，及下级</el-button>
+						<br v-if="scope.row.isBlack == 0">
+						<el-button type="text" @click="washUser(scope.row.userId)" v-if="scope.row.isBlack == 1">洗白该用户</el-button>
+						<br v-if="scope.row.isBlack == 1">
+						<el-button type="text" @click="washUser(scope.row.userId)" v-if="scope.row.isBlack == 3">洗白该用户，及下级</el-button>
 						
 					</template>
 				</el-table-column>
@@ -161,7 +160,7 @@
                 // })
                 let vue = this
 				this.loading = true
-                get("web/user/findUserList",{
+                get("server-admin/appUser/findUserList",{
                     params: {
 						userName: vue.select_word,
                         pageNum: vue.page.pageNum,
@@ -176,7 +175,7 @@
 					// 请求数据老键名
                     // vue.tableData =  data.data.data.list
                    // 请求数据新键名
-                    vue.tableData =  data.data.data.records
+                    vue.tableData =  data.data.data.list
                                     console.log(vue.tableData)
 									// vue.page.pageSize = data.data.data.pageSize;
 									vue.page.pageNum = data.data.data.pageNum;

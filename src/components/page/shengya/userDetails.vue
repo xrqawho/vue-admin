@@ -8,36 +8,42 @@
         <div class="container">
 			<h3>用户详情信息 </h3>
 			<div id="user">
-				<div>昵称：{{user.userName}}</div>
+				<div>账号：{{user.username}}</div>
 				<div>昵称：{{user.userRealName}}</div>
 				<div>头像：<img  :src="user.userImgUrl" alt=""></div>
-				<div>可提现金额： {{user.balance}}</div>
-				<div>手机号：{{user.phoneNumber}}</div>
-				<div>微信昵称： {{user.wechatNickname}}</div>
+				<div>可提现金额： {{user.totalAccount}}</div>
+				<div>手机号：{{user.mobile}}</div>
+				<!-- <div>微信昵称： {{user.wechatNickname}}</div> -->
 				<div>来源设备：<span v-if="user.platform == 1">安卓</span>
 							  <span v-if="user.platform == 2">ios</span>
 							  <span v-if="user.platform != 2 && user.platform != 1">其他</span></div>
-				<div>一级粉丝数： {{onesFen.list.length}}</div>
+				<!-- <div>一级粉丝数： {{onesFen.list.length}}</div> -->
 				<div>我的邀请码： {{user.meInviteCode}}</div>
-				<div>上次登录时间： {{timeTransition(user.userLastLoginTime)}}</div>
-				<div>注册时间： {{timeTransition(user.userCreateTime)}}</div>
+				<div>上级邀请码：{{user.superInviteCode}}</div>
+				<div>上次登录时间： {{user.userLastLoginTime}}</div>
+				<div>注册时间： {{user.loginFirstDate}}</div>
 			</div>
         </div>
 		<div class="container">
 			<h3>上级信息</h3>
 			<div id="user">
-				<div>推荐人微信昵称：</div>
-				<div>上级邀请码：{{user.superInviteCode}}</div>
+				<div>推荐人微信昵称：{{superUser.wechatNickname}}</div>
+				<div>推荐人userId：{{superUser.userId}}</div>
+				<div>推荐人头像：<img  :src="superUser.userImgUrl" alt=""></div>
+				<div>推荐人账号：{{superUser.username}}</div>
+				<div>推荐人昵称：{{superUser.userRealName}}</div>
+				<div>推荐人手机：{{superUser.mobile}}</div>
+				
 			</div>
 		</div>
 		<div class="container">
 		    <h3>订单详情</h3>
-			<el-alert
+			<!-- <el-alert
 			    :title="'有效总条数'+data.totalEffectiveItemCount+'条,退款总条数'+data.totalRefundItemCount+'条,商品总佣金￥'+data.totalItemCommission+'元,用户总佣金￥'+data.totalUserCommssion+'元'"
 			    type="info"
 			    
 			    :closable="false">
-			</el-alert>
+			</el-alert> -->
 
 			<el-table
 				v-loading="loading"
@@ -47,19 +53,22 @@
 			    <el-table-column prop="itemTitle" label="商品标题" width="300">
 			    </el-table-column>
 			    
-			    <el-table-column prop="tkStatus" label="状态" width="100" >
+			    <el-table-column prop="orderStatus" label="状态" width="100" >
 			    	<template slot-scope="scope">
-			    		<span v-if="scope.row.tkStatus == 13">订单失效</span>
-			    		<span v-if="scope.row.tkStatus == 3">订单结算</span>
-			    		<span v-if="scope.row.tkStatus == 12">订单成功</span>
-			    		<span v-if="scope.row.tkStatus == 0">订单完成</span>
+			    		<span v-if="scope.row.orderStatus == 13">订单失效</span>
+			    		<span v-if="scope.row.orderStatus == 3">订单结算</span>
+			    		<span v-if="scope.row.orderStatus == 12">订单成功</span>
+			    		<span v-if="scope.row.orderStatus == 14">订单完成</span>
 			    	</template>
 			    </el-table-column>
 			    
 			    <el-table-column prop="createTime" label="下单时间" >
 			    	
 			    	<template slot-scope="scope">
-			    	    <span>{{timeTransition(scope.row.createTime)}}</span>
+						<span v-if="scope.row.orderStatus == 13">{{scope.row.returnGoodsTime}}</span>
+						<span v-if="scope.row.orderStatus == 3">{{scope.row.settlementTime}}</span>
+						<span v-if="scope.row.orderStatus == 12">{{scope.row.payTime}}</span>
+						<span v-if="scope.row.orderStatus == 14">{{scope.row.receivingTime}}</span>
 			    	</template>
 			    </el-table-column>
 			    
@@ -69,59 +78,55 @@
 			    <el-table-column prop="itemId" label="商品ID" >
 			    </el-table-column>
 			    
-			    <el-table-column prop="tradeId" label="订单编号" >
+			    <el-table-column prop="orderId" label="订单编号" >
 			    </el-table-column>
 			    
-			    <el-table-column prop="alipayTotalPrice" label="付费金额" >
+			    <el-table-column prop="payMoney" label="付费金额" >
 			    </el-table-column>
 			    
-			    <el-table-column prop="totalCommissionRate" label="联盟比例" >
+			   <!-- <el-table-column prop="totalCommissionRate" label="联盟比例" >
 			    </el-table-column>
 			    
 			    <el-table-column prop="pubSharePreFee" label="联盟佣金" >
+			    </el-table-column> -->
+			    
+			    <el-table-column prop="userCommission" label="客户佣金" >
 			    </el-table-column>
 			    
-			    <el-table-column prop="meCommission" label="客户佣金" >
-			    	<template slot-scope="scope">
-			    		<div v-if="scope.row.orderGrade == '1' ">{{scope.row.meCommission}}</div>
-			    	</template>
-			    </el-table-column>
-			    
-			    <el-table-column prop="meCommission" label="上级直接粉丝佣金" >
-			    	<template slot-scope="scope">
-			    		<div v-if="scope.row.orderGrade == '2' ">{{scope.row.meCommission}}</div>
-			    	</template>
+			    <el-table-column prop="parentUserCommission" label="上级佣金" >
 			    </el-table-column>
 			    
 			    <el-table-column prop="revenue" label="预估收入" >
 			    </el-table-column>
 			    
-			    <el-table-column prop="tkEarningTime" label="新增收货时间" >
+			    <el-table-column prop="parentUserId" label="上级用户userId" >
 			    </el-table-column>
 			    
-			    <el-table-column prop="goodFrees" label="是否免单" >
+			    <el-table-column prop="orderType" label="是否免单" >
 			    	<template slot-scope="scope">
-			    		<div v-if="scope.row.goodFrees == 1">
-			    			{{scope.row.largeAmounTime}}
-			    		</div>
+			    		<span v-if="scope.row.orderType == 0">正常单</span>
+			    		<span v-if="scope.row.orderType == 1">淘礼金单</span>
+						<span v-if="scope.row.orderType == 2">免单</span>
+						<span v-if="scope.row.orderType == 3">首单</span>
+						<span v-if="scope.row.orderType == 4">淘礼金及首单</span>
 			    	</template>
 			    </el-table-column>
 			    
-			    <el-table-column prop="revenue" label="是否绑定红包" >
-			    	<template slot-scope="scope">
-			    		<div v-if="scope.row.tkStatus == 3 || 13 || 14">
-			    			{{scope.row.expireTime}}
-			    		</div>
-			    	</template>
+			    <el-table-column prop="redpackageMoney" label="红包金额" >
 			    </el-table-column>
 				
-			    <el-table-column prop="orderSettleStatus" width="120" label="订单是否违规" >
+			    <el-table-column prop="orderStatus" width="120" label="订单是否违规" >
 			    	<template slot-scope="scope">
-			    		<div v-if="scope.row.orderSettleStatus == '3'">订单已违规</div>
-			    		<el-button type="text" v-if="scope.row.orderSettleStatus != '3' && scope.row.tkStatus == 3"  @click="Violations(scope.row.tradeId)">未违规</el-button>
-			    	</template>
+							<span v-if="scope.row.orderStatus == 4">是</span>
+							<span v-if="scope.row.orderStatus != 4">否</span>
+			    		</template>
 			    </el-table-column>
-				
+				<el-table-column prop="hander" width="120" label="是否到账" >
+					<template slot-scope="scope">
+							<span v-if="scope.row.hander == 0">未到账</span>
+							<span v-if="scope.row.hander == 1">已到账</span>
+						</template>
+				</el-table-column>
 			  </el-table>
 			  
 			  <div class="pagination">
@@ -191,9 +196,9 @@
 			  </div>
 		</div>
 		<div class="container">
-		    <h3>一级粉丝</h3>
+		    <h3>下级用户</h3>
 		    <el-alert
-		        title="用户一级粉丝"
+		        title="用户下级用户"
 		        type="info"
 		        :closable="false">
 		    </el-alert>
@@ -291,6 +296,10 @@
 				</el-table-column>
 		    	
 		      </el-table>
+			  <div class="pagination">
+			      <el-pagination background @current-change="MoneyDetailsChange" layout="prev, pager, next, jumper" :total="MoneyDetailsPage.total" :page-size = "MoneyDetailsPage.pageSize" :current-page="MoneyDetailsPage.pageNum">
+			      </el-pagination>
+			  </div>
 		</div>
 		
 
@@ -304,6 +313,14 @@
         name: 'orderManagement',
         data() {
             return {
+				superUser:{
+					wechatNickname:"",
+					userId:"",
+					userImgUrl:"",
+					username:"",
+					userRealName:"",
+					mobile:""
+				},
                 user:{},
 				onesFen:{
 					list:[],
@@ -328,6 +345,8 @@
         },
         created() {
             this.getData();
+			this.superData();
+			this.subordinateData(1);
 			this.getOrderDetails(1)
 			this.getUserGetMoneyDetails(1)
         },
@@ -355,12 +374,35 @@
 			   //提现分页 点击回调
 			   this.getUserGetMoneyDetails(val)
 		   },
-		   
+		   subordinateData(pageNum){
+			   
+			get("server-admin/appUser/getSubordinateUserList",{
+				    params: {
+						userId:this.$route.query.userId,
+						
+						pageNum: pageNum,
+						pageSize: this.MoneyDetailsPage.pageSize,
+						total: this.MoneyDetailsPage.total,
+						
+				    }
+				})
+				.then( (data) => {
+				console.log("数据："+data)
+					this.loading = false
+					this.onesFenData = data.data.data.list
+					
+					this.MoneyDetailsPage.pageNum =  Number(data.data.data.pageSize);
+					this.MoneyDetailsPage.total =  Number(data.data.data.total);
+				})
+				.catch(function (error) {
+				    console.log(error);
+				});
+			},
             // 获取数据
             getData(pageNum) {
                this.loading = true;
                 let vue = this
-                get("web/user/findUserDetails",{
+                get("server-admin/appUser/findUserDetails",{
                     params: {
 						userId:this.$route.query.userId,
 						
@@ -368,13 +410,7 @@
                 })
                 .then( (data) => {
 					console.log(data.data.data)
-					this.user = data.data.data.map.user;
-					this.onesFen = data.data.data.map.onesFen;
-					this.data = data.data.data;
-					// this.orderDetail = data.data.data.map.appOrderDetailPageInfo.list;
-					// this.withdrawalDetail = data.data.data.map.withdrawalListPageInfo.list;
-					this.onesFenData = data.data.data.map.onesFen.list;
-					// this.orderDetailsData = data.data.data.map.appOrderDetailPageInfo.list;
+					this.user = data.data.data;
 					this.loading = false
                 })
                 .catch(function (error) {
@@ -417,10 +453,31 @@
 				  });          
 				});
 			},
-			
+			superData(){
+			this.loading = true;
+			    let vue = this
+			    get("server-admin/appUser/findSuperUserDetails",{
+			        params: {
+						userId:this.$route.query.userId,
+						
+			        }
+			    })
+			    .then( (data) => {
+					if (data.data.data == null) { 
+						this.superUser = {}
+						 } else{
+					this.superUser = data.data.data;	
+					}
+					
+					this.loading = false
+			    })
+			    .catch(function (error) {
+			        console.log(error);
+			    });
+			},	
 			getOrderDetails(pageNum){
 				// this.loading = true;
-				get("web/user/findUserOrderDetails",{
+				get("server-admin/appUser/findUserOrderList",{
 				    params: {
 						userId:this.$route.query.userId,
 						
@@ -444,7 +501,7 @@
 			
 			getUserGetMoneyDetails (pageNum){
 				// this.loading = true;
-				get("web/user/findUserGetMoneyDetails",{
+				get("server-admin/appUser/findUserGetMoneyLogList",{
 				    params: {
 						userId:this.$route.query.userId,
 						

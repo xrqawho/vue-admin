@@ -21,10 +21,9 @@
                 <el-table-column prop="noticeTitle" label="公告标题"  >
                 </el-table-column>
                 <el-table-column prop="noticeUrl" label="公告图片" >
-					<!-- <template slot-scope="scope">
-					    <img :src="scope.row.noticeUrl+'?'+new Date().getTime()" width="90%" alt="">
-					    
-					</template> -->
+					<template slot-scope="scope">
+					 <img :src="scope.row.noticeUrl" width="150" height="150" class="head_pic"/>
+					 </template>
                 </el-table-column>
                 <el-table-column prop="noticeStartTime" label="公告开始时间">
                 </el-table-column>
@@ -66,7 +65,7 @@
 							label-width="140px"
 							style="width: 70%;margin: 0 auto;">
 						<el-form-item class="label_awarn" label="公告图片:">
-							
+
 							<uploader
 								dir="test/upload/img"
 								v-model="form.noticeUrl"
@@ -217,23 +216,17 @@
             // 分页导航
             handleCurrentChange(val) {
                 this.cur_page = val;
-				alert(val);
                 this.getData(val);
             },
 			
             // 获取数据
             getData(pageNum) {
-                // fetchData({
-                //     page: this.cur_page
-                // }).then((res) => {
-                //     this.tableData = res.list;
-                //     console.log(this.tableData)
-                // })
                 let vue = this
                 get("server-admin/appNotice/list",{
-                   
-                        pageNum:vue.page.pageNum,
-                        pageSize: vue.page.pageSize
+                   params: {
+                        pageNum:pageNum,
+                        pageSize: vue.page.pageSize,
+						}
                    
                 })
                 .then(function (data) {
@@ -350,7 +343,7 @@
             },
             deleteRow() {
 				 this.delVisible = false;
-                post("sy/appNotice/insertOrUpdate",{
+                post("server-admin/appNotice/insertOrUpdate",{
 						id: this.id,
 						delFlag: 1,
                 })
@@ -364,7 +357,7 @@
 							}
 						})
                 		
-                		this.$message.success(data.data.msg);
+                		this.$message.success("删除成功!");
                 		this.getData()
                 		
                 	} else{
@@ -413,14 +406,14 @@
 				
 				this.editVisible = false;
                console.log(this.form)
-				post("sy/appNotice/insertOrUpdate",{
+				post("server-admin/appNotice/insertOrUpdate",{
 					
 					id: this.form.id,
 					noticeUrl: this.form.noticeUrl,
 					noticeTitle: this.form.noticeTitle,
-					enable: this.form.enable,
+					enabled: this.form.enabled,
 					noticeSort:this.form.noticeSort,
-					noticeBeginTime: this.timeTransition(this.StartEndTime[0]),
+					noticeStartTime: this.timeTransition(this.StartEndTime[0]),
 					noticeEndTime: this.timeTransition(this.StartEndTime[1]),
 					
 				})
@@ -436,7 +429,7 @@
 							})
 						}
 
-						this.$message.success(data.data.msg);
+						this.$message.success("操作成功~");
 						this.getData();
 						
 					} else{
@@ -450,19 +443,7 @@
 			handleSuccess (data) {
 				console.log(data)
 			},
-			handleRemove(file, fileList) {
-				//删除的回调函数
-				console.log(file);
-				this.qiniuimage = null;
-				this.form.noticeUrl = null,
-				this.$refs.upload.clearFiles()
-				if (fileList.length == 0) {
-					let upload = document.getElementsByClassName("el-upload--picture-card");
-					upload[0].style.display = "inline-block";
-					this.fileListLength = fileList.length;
-				}
-				
-			},
+			
 			timeTransition(beginTime){
 				//转换时间
 				if (beginTime == null) {

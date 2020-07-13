@@ -50,7 +50,7 @@
                 </el-table-column>
 
 
-                <el-table-column prop="beginTime" label="创建时间">
+                <el-table-column prop="beginTime" label="开始时间">
                 </el-table-column>
                 <el-table-column prop="endTime" label="结束时间">
                 </el-table-column>
@@ -64,7 +64,7 @@
                 <el-table-column label="操作" width="100" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" @click="handleEdit(2,scope.row)">编辑</el-button>
-                        <el-button @click="sortInput(scope.row.id,scope.row.freeSerialNumber)" type="text">序号（排序）
+                        <el-button @click="sortInput(scope.row.id,scope.row.freeSort)" type="text">序号（排序）
                         </el-button>
                         <el-button type="text" icon="el-icon-delete" class="red"
                                    @click="handleDelete(scope.$index, scope.row)">删除
@@ -84,27 +84,14 @@
             <el-form :model="form"
                      label-width="80px"
                      style="width: 70%;margin: 0 auto;">
-                <el-form-item label="主图">
-
-                    <el-upload
-                            :action="imgUpsite"
-                            list-type="picture-card"
-                            :on-preview="handlePictureCardPreview"
-                            :on-remove="handleRemove"
-                            :on-success="handleSuccess"
-                            ref="upload"
-                            :limit="1"
-                            :data="qiniu"
-                            accept=".png,.bmp,.jpg,"
-                    >
-                        <img v-if="form.itemPictureUrl != null"
-                             style="width:146px;height: 146px;display: inline-block;" :src="form.itemPictureUrl"
-                             alt="">
-                        <i class="el-icon-plus"></i>
-                    </el-upload>
-
-                </el-form-item>
-
+					<el-form-item class="label_awarn" label="公告图片:">
+	
+							<uploader
+								dir="test/upload/img"
+								v-model="form.itemPictureUrl"
+								@upload-success="handleSuccess"
+							></uploader>
+						</el-form-item>
                 <el-form-item label="商品ID">
                     <el-input v-model="form.itemId" style="width: 150px;"></el-input>
                 </el-form-item>
@@ -112,10 +99,18 @@
                 <el-form-item label="商品名称">
                     <el-input v-model="form.itemTitle" style="width: 250px;"></el-input>
                 </el-form-item>
+				 <el-form-item label="免单金额">
+				    <el-input v-model="form.freeAccount" style="width: 150px;"></el-input>
+				</el-form-item>
+				<el-form-item label="总免单数">
+				    <el-input v-model="form.totalOrders" style="width: 150px;"></el-input>
+				</el-form-item>
 
                 <el-form-item label="平台">
                     <el-select v-model="form.platformType" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
-                        <el-option :key="0" label="淘宝" :value="0"></el-option>
+                         <el-option :key="itme.value" v-for="itme in platformTypeList" :label="itme.name"
+                                   :value="itme.value">{{itme.name}}
+                        </el-option>
                     </el-select>
                 </el-form-item>
 
@@ -126,13 +121,14 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item class="label_awarn" v-if="form.freeType == 2" label="淘礼金url">
-                    <el-input
-                            type="text"
-                            placeholder="请以http或者https开头"
-                            v-model="form.freeGiftUrl">
-                    </el-input>
-                </el-form-item>
+				 <el-form-item label="开始时间">
+				    <el-date-picker
+				            v-model="form.beginTime"
+				            type="datetime"
+				            placeholder="选择日期时间"
+				            :default-time="dateTime">
+				    </el-date-picker>
+				</el-form-item>
                 <el-form-item label="结束时间">
                     <el-date-picker
                             v-model="form.endTime"
@@ -175,10 +171,15 @@
 </template>
 
 <script>
+	import { deleteFile } from '@/api/OssUpload'
+	import Uploader from '@/components/common/Uploader'
     import {post, get} from '../../../api/index';
 
     export default {
         name: 'freeChage',
+		components: {
+			Uploader
+		},
         data() {
             return {
                 tableData: [],
@@ -195,6 +196,11 @@
                 linkTypeList: [
                     {name: '固定返', value: 1},
                     {name: '淘礼金', value: 2},
+                ],
+				platformTypeList:[
+                    {name: '淘宝', value: 0},
+                    {name: '京东', value: 1},
+					{name: '拼多多', value: 2},
                 ],
                 form: {
                     endTime: null,//1566626222378
@@ -235,7 +241,7 @@
             }
         },
         created() {
-            this.getData();
+            this.getData(1);
             //this.getImgData();
         },
         computed: {
@@ -253,12 +259,7 @@
             },
             // 获取数据
             getData(pageNum) {
-                // fetchData({
-                //     page: this.cur_page
-                // }).then((res) => {
-                //     this.tableData = res.list;
-                //     console.log(this.tableData)
-                // })
+               
                 let vue = this
                 get("server-admin/goodsFree/list", {
                     params: {
@@ -287,6 +288,7 @@
                                 "freeStatus": list.freeStatus,
                                 "freeSerialNumber": list.itemDetails,
                                 "id": list.id,
+								freeSort:list.freeSort,
                                 "freeType": list.freeType,
 								"freeAccount":list.freeAccount
                             };
@@ -356,37 +358,23 @@
 
                 this.qiniuimage = null;
                 this.editVisible = true;
-
-                if (this.$refs.upload) {
-                    if (this.$refs.upload.fileList.length == 0) {
-                        let upload = document.getElementsByClassName("el-upload--picture-card");
-                        upload[0].style.display = "inline-block";
-                    } else {
-                        this.$refs.upload.clearFiles()
-                        let upload = document.getElementsByClassName("el-upload--picture-card");
-                        upload[0].style.display = "inline-block";
-                    }
-                }
-                /*if (this.$refs.upload) {
-                    this.$refs.upload.clearFiles()
-                }*/
-
+               
                 if (index == 1) {
 
                     this.judge = index;
                     this.judgeTitle = "新增"
-                    /*this.form = {
-                        endTime: null,
-                        fixedAmount: null,
-                        goodsId: null,
-                        goodsName: null,
-                        goodsPictureUrl: null,
-                        goodsPlatform: null,
-                        number: null,
-                        printUrl: null,
-                        freeType: null,
-                        freeGiftUrl: null,
-                    }*/
+                   this.form = {
+                   	beginTime:"",
+                       endTime: "",
+                       itemId: "",
+                       itemTitle:"",
+                       itemPictureUrl:"",
+                       platformType: "",
+                       id: "",
+                       freeType: "",
+                   	freeAccount:"",
+                   	totalOrders:"",
+                   }
 
                 } else {
                     this.judge = index;
@@ -394,16 +382,16 @@
                     //alert("row.freeType====>>>>>"+row.freeType)
                     console.log(row.itemPictureUrl)
                     this.form = {
-                        endTime: Number(row.endTime),
+						beginTime:row.beginTime,
+                        endTime: row.endTime,
                         itemId: row.itemId,
                         itemTitle: row.itemTitle,
                         itemPictureUrl: row.itemPictureUrl,
-                        goodsPlatform: row.goodsPlatform,
-                        number: row.number,
-                        printUrl: row.itemPictureUrl,
+                        platformType: row.platformType,
                         id: row.id,
                         freeType: row.freeType,
-                        freeGiftUrl: row.freeGiftUrl,
+						freeAccount:row.freeAccount,
+						totalOrders:row.totalOrders,
                     }
                     this.dialogImageUrl = row.itemPictureUrl;
 
@@ -414,6 +402,7 @@
             },
             handleDelete(index, row) {
                 // console.log(row)
+				 this.oldForm = { itemPictureUrl: row.itemPictureUrl }
                 this.delId = row.id;
                 this.form.itemId=row.itemId;
                 this.delVisible = true;
@@ -436,17 +425,11 @@
                 // this.editVisible = false;
 
                 // this.$message.success(`修改第 ${this.idx+1} 行成功`);
-
-
-                delete this.form.itemPictureUrl;
-
-                this.form.endTime = new Date(this.form.endTime).getTime();
-                console.log(this.form)
                 if (this.form.itemId == null || this.form.itemId == "") {
                     this.$message.error("商品ID不能为空");
                     return
                 }
-
+				
                 if (this.form.endTime == null || this.form.endTime == "") {
                     this.$message.error("时间不能为空");
                     return
@@ -456,23 +439,34 @@
                     //新增
                     this.form.printUrl = this.qiniuimage;
                     this.editVisible = false;
-                    post("web/goodsFree/addGoodsFree",
-                        this.form
+                    post("server-admin/goodsFree/insertOrUpdate",
+                        {
+                        	activityBeginTime: this.form.beginTime,
+                        	activityEndTime:  this.form.endTime,
+                        	itemId:  this.form.itemId,
+                        	itemTitle:  this.form.itemTitle,
+                        	itemPictureUrl: this.form.itemPictureUrl,
+                        	platformType:  this.form.platformType,
+                        	freeType:  this.form.freeType,
+                        	freeAccount: this.form.freeAccount,
+                        	itemTotalNum: this.form.totalOrders,
+                        }
                     )
                         .then((data) => {
                             console.log(data)
                             if (data.data.status == 200) {
                                 this.$message.success(data.data.msg);
-                                this.form = {
-                                    endTime: null,
-                                    itemId: null,
-                                    itemTitle: null,
-                                    itemPictureUrl: null,
-                                    goodsPlatform: null,
-                                    number: null,
-                                    printUrl: null,
-                                    freeType: null,
-                                    freeGiftUrl: null,
+                                 this.form = {
+                                	beginTime:"",
+                                    endTime: "",
+                                    itemId: "",
+                                    itemTitle:"",
+                                    itemPictureUrl:"",
+                                    platformType: "",
+                                    id: "",
+                                    freeType: "",
+                                	freeAccount:"",
+                                	totalOrders:"",
                                 }
                                 this.getData(1)
                             } else {
@@ -489,11 +483,23 @@
                     }
                     this.editVisible = false;
                     //alert("form===>>>>"+JSON.stringify(this.form))
-                    post("web/goodsFree/updateByGoodsFree", this.form)
+                    post("server-admin/goodsFree/insertOrUpdate", 
+                        {
+							id:this.form.id,
+                        	activityBeginTime: this.form.beginTime,
+                        	activityEndTime:  this.form.endTime,
+                        	itemId:  this.form.itemId,
+                        	itemTitle:  this.form.itemTitle,
+                        	itemPictureUrl: this.form.itemPictureUrl,
+                        	platformType:  this.form.platformType,
+                        	freeType:  this.form.freeType,
+                        	freeAccount: this.form.freeAccount,
+                        	itemTotalNum: this.form.totalOrders,
+                        })
                         .then((data) => {
                             console.log(data)
                             if (data.data.status == 200) {
-                                this.$message.success(data.data.msg);
+                                this.$message.success("修改成功");
 
                                 this.getData(1)
                             } else {
@@ -512,16 +518,21 @@
                 // this.$message.success('删除成功');
                 this.delVisible = false;
                 //alert("id="+this.form.goodsId);
-                get("web/goodsFree/deleteByGoodsId", {
-                    params: {
+                post("server-admin/goodsFree/insertOrUpdate", {
                         itemId:this.form.itemId,
                         id: this.delId,
-                    }
+						delFlag:1,
                 })
                     .then((data) => {
                         console.log(data)
                         if (data.data.status == 200) {
-                            this.$message.success(data.data.msg);
+                            this.$message.success("删除成功~");
+							// 删除旧图片
+							deleteFile(this.oldForm.itemPictureUrl).then(result => {
+								if (!result.success) {
+									this.$message.error(result.msg)
+								}
+							})
                             this.sortVisible = false;
                             this.getData(1);
                         } else {
@@ -540,14 +551,14 @@
             },
             //进行序号排序保存操作
             sortSave() {
-                post("web/goodsFree/updateSerial", {
-                    freeSerialNumber: this.sortValue,
+                post("server-admin/goodsFree/insertOrUpdate", {
+                    freeSort: this.sortValue,
                     id: this.sortId,
                 })
                     .then((data) => {
                         console.log(data)
                         if (data.data.status == 200) {
-                            this.$message.success(data.data.msg);
+                            this.$message.success("修改成功~");
                             this.sortVisible = false;
                             this.getData(1);
                         } else {
