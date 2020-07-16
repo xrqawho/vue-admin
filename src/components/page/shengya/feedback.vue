@@ -9,12 +9,16 @@
             <div class="handle-box">
                 
 				用户名：
-				<el-input v-model="userName" placeholder="请输入用户名" class="handle-input mr10"></el-input>
-				关键字：
-				<el-input v-model="keyword" placeholder="请输入关键字" class="handle-input mr10"></el-input>
+				<el-input v-model="userId" placeholder="请输入用户id" class="handle-input mr10"></el-input>
+				用户昵称：
+				<el-input v-model="keyword" placeholder="请输入用户昵称" class="handle-input mr10"></el-input>
 				手机号：
 				<el-input v-model="phone" placeholder="请输入手机号" class="handle-input mr10"></el-input>
-				
+				 处理状态：
+								<el-select v-model="feekbackStatus" placeholder="请选择状态" class="handle-select mr10">
+									<el-option key="1" label="未处理" value="0"></el-option>
+									<el-option key="2" label="已处理" value="1"></el-option>
+								</el-select>
 				<el-button type="primary" icon="el-icon-search" @click="getData(1)">搜索</el-button>
 			
 			</div>
@@ -23,37 +27,35 @@
                 <el-table-column prop="userId" label="账号ID" >
                 </el-table-column>
 				
-                <el-table-column prop="userName" label="分类名称">
+                <el-table-column prop="wechatNickname" label="用户昵称">
                 </el-table-column>
 				
-                <el-table-column prop="contentFeedback" label="反馈问题" >
+                <el-table-column prop="feekbackContent" label="反馈问题" >
                 </el-table-column>
 				
-				<el-table-column prop="createTime" label="反馈时间" >
-					<template slot-scope="scope">
-					    {{timeTransition(scope.row.createTime)}}
-					</template>
+				<el-table-column prop="createDate" label="反馈时间" >
 				</el-table-column>
 				
 				<el-table-column prop="phone" label="用户手机" >
 				</el-table-column>
 				
-				<el-table-column prop="sort" label="图片" >
+				<el-table-column prop="feekbackUrl" label="图片" >
 					<template slot-scope="scope">
-					    <img class="feedbackImg" v-for="itme in truncationPicture(scope.row.feedbackImg)" @click="magnifyImg(itme)"  :src="itme" alt="">
+					    <img class="feedbackImg" v-for="itme in truncationPicture(scope.row.feekbackUrl)" @click="magnifyImg(itme)"  :src="itme" alt="">
 					</template>
 				</el-table-column>
 				
-				<el-table-column prop="manageWay" label="解决方式" >
+				<el-table-column prop="feekbackStatus" label="解决方式" >
 					<template slot-scope="scope">
-						<el-button v-if="scope.row.manageStatus == 0" type="text" @click="clickSolution(scope.row)">还未解决，去解决</el-button>
+						<el-button v-if="scope.row.feekbackStatus == 0" type="text" @click="clickSolution(scope.row)">还未解决，去解决</el-button>
+						<div v-if="scope.row.feekbackStatus == 1">{{scope.row.remark}}</div>
 					</template>
 				</el-table-column>
 				
-				<el-table-column prop="manageStatus" label="处理状态" >
+				<el-table-column prop="feekbackStatus" label="处理状态" >
 					<template slot-scope="scope">
-					    <div v-if="scope.row.manageStatus == 1">已解决</div>
-						<el-button v-if="scope.row.manageStatus == 0" type="text" @click="clickSolution(scope.row)">未解决</el-button>
+					    <div v-if="scope.row.feekbackStatus == 1">已解决</div>
+						<el-button v-if="scope.row.feekbackStatus == 0" type="text" @click="clickSolution(scope.row)">未解决</el-button>
 						
 					</template>
 				</el-table-column>
@@ -97,9 +99,10 @@
             return {
                 tableData: [],
                 multipleSelection: [],
-				userName:'',
+				userId:'',
 				keyword: '',
 				phone: '',
+				feekbackStatus:'',
 				page:{
 					pageSize:10,
 					pageNum: 1,
@@ -135,16 +138,15 @@
             getData(pageNum) {
                 
                 let vue = this
-                get("feedback/list",{
+                get("server-admin/admin-feedback/list",{
                     params: {
-						userName: this.userName,
+						userId: this.userId,
 						keyWord: this.keyword,
 						phone: this.phone,
+						feekbackStatus: this.feekbackStatus,
 						
-						
-                        currentPage: pageNum,
+                        pageNum: pageNum,
                         pageSize: vue.page.pageSize,
-                        total: vue.page.total,
                     }
                 })
                 .then(function (data) {
@@ -164,14 +166,14 @@
 			clickSolution(row){
 				console.log(row)
 				this.editVisible = true;
-				this.tableId = row.tableId;
+				this.tableId = row.id;
 			},
             solution(){
-				post("feedback/manage",{
-					
-						tableId:this.tableId,
-						manageStatus:1,
-						manageWay:this.form.manageWay,
+				get("server-admin/admin-feedback/updateSolveFeedback",{
+					params: {
+						id:this.tableId,
+						remark:this.form.manageWay,
+						}
 						
 				})
 				.then( (data) => {

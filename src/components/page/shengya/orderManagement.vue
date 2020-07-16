@@ -9,12 +9,13 @@
             <div class="handle-box">
 				 条件筛选
 				 <br>
-			<!-- 	 成交平台：
-				<el-select v-model="goodsPlatform" placeholder="平台" class="handle-select mr10">
+			 	 平台：
+				<el-select v-model="platformType" placeholder="平台" class="handle-select mr10">
 					<el-option key="0" label="全部" :value="null"></el-option>
-				    <el-option key="1" label="淘宝" value="淘宝"></el-option>
-					<el-option key="2" label="天猫" value="天猫"></el-option>
-				</el-select> -->
+				    <el-option key="1" label="淘宝" value="1"></el-option>
+					<el-option key="2" label="京东" value="2"></el-option>
+					<el-option key="3" label="拼多多" value="3"></el-option>
+				</el-select> 
 
 				订单状态：
 				<el-select v-model="payStatus" placeholder="请选择订单状态" class="handle-select mr10">
@@ -22,9 +23,8 @@
 					<el-option key="2" label="订单失效" :value="13"></el-option>
 					<el-option key="3" label="订单结算" :value="3"></el-option>
 				    <el-option key="4" label="订单付款" :value="12"></el-option>
-					<el-option key="3" label="维权订单" :value="4"></el-option>
-					<el-option key="3" label="订单完成" :value="14"></el-option>
-					<el-option key="5" label="无状态" :value="0"></el-option>
+					<el-option key="5" label="维权订单" :value="4"></el-option>
+					<el-option key="6" label="订单完成" :value="14"></el-option>
 				</el-select>
 				(申请时间)时间范围：
 				<el-date-picker
@@ -36,13 +36,14 @@
 				  end-placeholder="结束日期">
 				</el-date-picker>
 
-				<el-input v-model="keyWord" placeholder="请输入关键字" class="handle-input mr10"></el-input>
+				关键字：<el-input v-model="keyWord" placeholder="请输入关键字" class="handle-input mr10"></el-input><br />
+				用户id：<el-input v-model="userId" placeholder="请输入用户id" class="handle-input mr10"></el-input>
 				<el-button type="primary" icon="el-icon-search" @click="getData(1)">搜索</el-button>
             </div>
 
 			<div class="handle-box">
 
-				<el-upload
+				<!-- <el-upload
 					:action="url+'web/order/violations/import'"
 					accept = ".xls, .xlsx"
 					:headers="setToken()"
@@ -51,7 +52,7 @@
 					:on-success = "uploadImport"
 					>
 					<el-button size="small"  type="primary">点击上传</el-button>
-				</el-upload>
+				</el-upload> -->
 
 			</div>
 
@@ -66,79 +67,83 @@
                 <el-table-column prop="itemTitle" label="商品标题" width="300">
                 </el-table-column>
 
-                <el-table-column prop="tkStatus" label="状态" width="100" >
+                <el-table-column prop="orderStatus" label="状态" width="100" >
 					<template slot-scope="scope">
-						<span v-if="scope.row.tkStatus == 14">订单成功</span>
-						<span v-if="scope.row.tkStatus == 13">订单失效</span>
-						<span v-if="scope.row.tkStatus == 3">订单结算</span>
-						<span v-if="scope.row.tkStatus == 4">维权订单</span>
-						<span v-if="scope.row.tkStatus == 12">订单付款</span>
-						<span v-if="scope.row.tkStatus == 0">无状态</span>
+						<span v-if="scope.row.orderStatus == 14">订单成功</span>
+						<span v-if="scope.row.orderStatus == 13">订单失效</span>
+						<span v-if="scope.row.orderStatus == 3">订单结算</span>
+						<span v-if="scope.row.orderStatus == 4">维权订单</span>
+						<span v-if="scope.row.orderStatus == 12">订单付款</span>
 					</template>
                 </el-table-column>
 
-                <el-table-column prop="createTime" label="下单时间" >
+                <el-table-column prop="payTime" label="下单时间" >
 
-					<template slot-scope="scope">
-					    <span>{{timeTransition(scope.row.createTime)}}</span>
-					</template>
                 </el-table-column>
-
-                <el-table-column prop="userName" label="微信名字" >
+				 <el-table-column prop="receivingTime" label="确认收货时间" >
+				
+				</el-table-column>
+				 <el-table-column prop="settlementTime" label="结算时间" >
+				
+				</el-table-column>
+				 <el-table-column prop="returnGoodsTime" label="退货时间" >
+				
+				</el-table-column>
+				<el-table-column prop="hander" label="到账状态" >
+					<template slot-scope="scope">
+						<span v-if="scope.row.hander == 0" style="color:#228B22">未到账</span>
+						<span v-if="scope.row.hander == 1" style="color:#F00;">已到账</span>
+					</template>
+				</el-table-column>
+				
+				 <el-table-column prop="largeExpireTime" label="预计到账时间" >
+				
+				</el-table-column>
+				
+				
+                <el-table-column prop="userId" label="用户id" >
                 </el-table-column>
 
 				<el-table-column prop="itemId" label="商品ID" >
 					<template slot-scope="scope">
-						<div @click="taobao(scope.row.itemId)" style="cursor: pointer;">
+						<div @click="taobao(scope.row.itemId)" style="cursor: pointer; color:#0000FF" >
 							{{scope.row.itemId}}
 						</div>
 					</template>
 				</el-table-column>
 
-				<el-table-column prop="tradeId" label="订单编号" >
+				<el-table-column prop="orderId" label="订单编号" >
 				</el-table-column>
 
-				<el-table-column prop="alipayTotalPrice" label="付费金额" >
+				<el-table-column prop="payMoney" label="付费金额" >
 				</el-table-column>
 
-				<el-table-column prop="totalCommissionRate" label="联盟比例" >
+				<el-table-column prop="userCommission" label="客户佣金" >
+					
 				</el-table-column>
 
-				<el-table-column prop="pubSharePreFee" label="联盟佣金" >
+				<el-table-column prop="parentUserId" label="上级用户id" >
+					
 				</el-table-column>
-
-				<el-table-column prop="meCommission" label="客户佣金" >
+				<el-table-column prop="parentUserCommission" label="上级佣金" >
+				</el-table-column>
+					
+				<el-table-column prop="estimateMoney" label="预估收入" >
+				</el-table-column>
+				<el-table-column prop="commissionRate" label="佣金比例" >
+				</el-table-column>
+				<el-table-column prop="orderType" label="状态" width="100" >
 					<template slot-scope="scope">
-						<div v-if="scope.row.orderGrade == '1' ">{{scope.row.meCommission}}</div>
+						<span v-if="scope.row.orderType == 0">正常单</span>
+						<span v-if="scope.row.orderType == 1">淘礼金单</span>
+						<span v-if="scope.row.orderType == 2">免单</span>
+						<span v-if="scope.row.orderType == 3">首单</span>
+						<span v-if="scope.row.orderType == 4">淘礼金及首单</span>
 					</template>
+				</el-table-column>	
+				<el-table-column prop="giftMoney" label="淘礼金金额" >
 				</el-table-column>
-
-				<el-table-column prop="meCommission" label="上级直接粉丝佣金" >
-					<template slot-scope="scope">
-						<div v-if="scope.row.orderGrade == '2' ">{{scope.row.meCommission}}</div>
-					</template>
-				</el-table-column>
-
-				<el-table-column prop="revenue" label="预估收入" >
-				</el-table-column>
-
-				<el-table-column prop="tkEarningTime" label="新增收货时间" >
-				</el-table-column>
-
-				<el-table-column prop="goodFrees" label="是否免单" >
-					<template slot-scope="scope">
-						<div v-if="scope.row.goodFrees == 1">
-							{{scope.row.largeAmounTime}}
-						</div>
-					</template>
-				</el-table-column>
-
-				<el-table-column prop="revenue" label="是否绑定红包" >
-					<template slot-scope="scope">
-						<div v-if="scope.row.tkStatus == 3 || 13 || 14">
-							{{scope.row.expireTime }}
-						</div>
-					</template>
+				<el-table-column prop="redpackageMoney" label="红包金额" >
 				</el-table-column>
 
 				<el-table-column prop="orderSettleStatus" width="120" label="订单是否违规" >
@@ -177,7 +182,7 @@
                 tableData: [],
 				TransactionPlatform: '',
 				orderStatus: '',
-
+				userId:'',
                 multipleSelection: [],
                 select_cate: '',
                 select_word: '',
@@ -194,9 +199,9 @@
 					total: 0,
 				},
 
-				payStatus: null,
+				payStatus: '',
 				keyWord: null,
-				goodsPlatform: null,
+				platformType: '',
 				//时间
 				time: null,
 				loading: false,
@@ -204,7 +209,7 @@
             }
         },
         created() {
-            this.getData();
+            this.getData(1);
         },
         computed: {
             data() {
@@ -233,17 +238,16 @@
 					endTime = this.time[1]
 				}
                 let vue = this
-                get("web/order/selectAppOrderDetailListNew",{
+                get("server-admin/appUserOrder/list",{
                     params: {
-						payStatus: this.payStatus,
+						platformType: this.platformType,
+						userId:this.userId,
+						orderStatus: this.payStatus,
 						keyWord: this.keyWord,
-						goodsPlatform: this.goodsPlatform,
-						startTime: this.timeTransition(startTime),
-						endTime: this.timeTransition(endTime),
-
-                        currentPage: pageNum,
+						startDate: this.timeTransition(startTime),
+						endDate: this.timeEndTransition(endTime), 
+                        pageNum: pageNum,
 						pageSize: vue.page.pageSize,
-						total: vue.page.total,
                     }
                 })
                 .then( (data) => {
@@ -315,18 +319,38 @@
 			timeTransition(beginTime){
 				//转换时间
 				if (beginTime == null) {
-					return	'';
+					return	null;
 				} else if(beginTime == ''){
-					return	'';
+					return	null;
 				}
-				let d = new Date( Number(beginTime) );    //根据时间戳生成的时间对象
-				let date = (d.getFullYear()) + "-" +
-						   (d.getMonth() + 1) + "-" +
-						   (d.getDate()) + " " +
-						   (d.getHours()) + ":" +
-						   (d.getMinutes()) + ":" +
-						   (d.getSeconds());
-				return	date;
+				const dateTime = new Date(beginTime)
+                const year = dateTime.getFullYear()
+                const month = dateTime.getMonth() + 1
+                const date = dateTime.getDate()
+                const hour = dateTime.getHours()
+                const minute = dateTime.getMinutes()
+                const second = dateTime.getSeconds()
+				var a = year+"-"+month+"-"+date+" 00:00:00";
+				return a;
+              
+			},
+			timeEndTransition(beginTime){
+				//转换时间
+				if (beginTime == null) {
+					return	null;
+				} else if(beginTime == ''){
+					return	null;
+				}
+				const dateTime = new Date(beginTime)
+			    const year = dateTime.getFullYear()
+			    const month = dateTime.getMonth() + 1
+			    const date = dateTime.getDate()
+			    const hour = dateTime.getHours()
+			    const minute = dateTime.getMinutes()
+			    const second = dateTime.getSeconds()
+				var a = year+"-"+month+"-"+date+" 23:59:59";
+				return a;
+			  
 			},
             handleEdit(index, row) {
                 this.idx = index;

@@ -10,10 +10,10 @@
 				 条件筛选：
 				 处理状态：
 				<el-select v-model="applicantStatus" placeholder="请选择订单状态" class="handle-select mr10">
-				    <el-option key="1" label="未处理" value="1"></el-option>
-					<el-option key="2" label="已处理" value="2"></el-option>
-					<el-option key="3" label="已拒绝" value="3"></el-option>
-				    <el-option key="4" label="全部" value="4"></el-option>
+				    <el-option key="1" label="未处理" value="0"></el-option>
+					<el-option key="2" label="已处理" value="1"></el-option>
+					<el-option key="3" label="已拒绝" value="2"></el-option>
+				    <el-option key="4" label="全部" value=""></el-option>
 				</el-select>
 				(申请时间)时间范围：
 				<el-date-picker
@@ -48,44 +48,35 @@
                 <el-table-column prop="wechatNickname" label="微信昵称" sortable width="150">
 					
                 </el-table-column>
-                <el-table-column prop="userRealName" label="姓名" width="150">
+                <el-table-column prop="realName" label="姓名" width="150">
 					
                 </el-table-column>
 				
-                <el-table-column prop="alipayAccount" label="支付宝" width="150" >
+                <el-table-column prop="cashAccountName" label="支付宝" width="150" >
                 </el-table-column>
 				
-                <el-table-column prop="phoneNumber" label="手机号" width="150" >
+                <el-table-column prop="phone" label="手机号" width="150" >
                 </el-table-column>
 				
-				<el-table-column prop="amount" label="申请金额(元)" width="110" >
+				<el-table-column prop="cashAccount" label="申请金额(元)" width="110" >
 					
 				</el-table-column>
-                <el-table-column prop="applicantStatus" label="状态" width="100" >
+                <el-table-column prop="cashStatus" label="状态" width="100" >
 					<template slot-scope="scope">
-					   <span v-if="scope.row.applicantStatus == 1">未处理</span>
-					   <span v-if="scope.row.applicantStatus == 2">已处理</span>
-					   <span v-if="scope.row.applicantStatus == 3">已拒绝</span>
+					   <span v-if="scope.row.cashStatus == 0"  style="color:#228B22">未处理</span>
+					   <span v-if="scope.row.cashStatus == 1" style="color:#F00;">成功</span>
+					   <span v-if="scope.row.cashStatus == 2" style="color:#808080">失败</span>
 					</template>
                 </el-table-column>
 				
-				<el-table-column prop="abnormalAmount" label="账户余额异常" width="100" >
-					<template slot-scope="scope">
-					   <span v-if="scope.row.abnormalAmount  == 0">正常</span>
-					   <span v-if="scope.row.abnormalAmount  == 1">账户余额为负数</span>
-					</template>
+				<el-table-column prop="beforeTotalAccount" label="提现前金额" width="150" align="center" >
+				</el-table-column>
+				<el-table-column prop="afterTotalAccount" label="提现后金额" width="150" align="center" >
 				</el-table-column>
 				
-				<el-table-column prop="applicantTime" label="申请时间" width="150" align="center" >
-					
-					<template slot-scope="scope">
-					   {{timeTransition(scope.row.applicantTime)}}
-					</template>
+				<el-table-column prop="createDate" label="申请时间" width="150" align="center" >
 				</el-table-column>
-				<el-table-column prop="processingTime" label="处理时间" width="150" align="center" >
-					<template slot-scope="scope">
-					   {{timeTransition(scope.row.processingTime)}}
-					</template>
+				<el-table-column prop="updateDate" label="处理时间" width="150" align="center" >
 				</el-table-column>
                 <el-table-column prop="remark" label="备注(或拒绝原因)"  align="center" >
 					<template slot-scope="scope">
@@ -108,10 +99,10 @@
 				
                 <el-table-column prop="time" label="操作" width="100" align="center" >
 					<template slot-scope="scope">
-					    <el-button type="text" v-if="scope.row.applicantStatus == 2"  @click="handleEdit(scope.$index, scope.row)">查看详情</el-button>
-						<el-button type="text" v-if="scope.row.applicantStatus == 3"  @click="handleEdit(scope.$index, scope.row)">查看详情</el-button>
-						<el-button type="text" v-if="scope.row.applicantStatus != 2 && scope.row.applicantStatus != 3"  @click="saveEdit(1, scope.row)">确认</el-button>
-						<el-button type="text" v-if="scope.row.applicantStatus != 2 && scope.row.applicantStatus != 3" class="red"  @click="saveEdit(2, scope.row)">拒绝</el-button>
+					    <el-button type="text" v-if="scope.row.cashStatus == 1"  @click="handleEdit(scope.$index, scope.row)">查看详情</el-button>
+						<el-button type="text" v-if="scope.row.cashStatus == 2"  @click="handleEdit(scope.$index, scope.row)">查看详情</el-button>
+						<el-button type="text" v-if="scope.row.cashStatus == 0"  @click="saveEdit(1, scope.row)">确认</el-button>
+						<el-button type="text" v-if="scope.row.cashStatus == 0" class="red"  @click="saveEdit(2, scope.row)">拒绝</el-button>
 					</template>
                 </el-table-column>
                <!-- <el-table-column label="操作" width="180" align="center">
@@ -145,25 +136,21 @@
 				
 				<el-form-item label="处理结果">
 				    <!-- {{form.amount}} -->
-					<span v-if="form.applicantStatus == 1">未处理</span>
-					<span v-if="form.applicantStatus == 2">已处理</span>
-					<span v-if="form.applicantStatus == 3">已拒绝</span>
+					<span v-if="form.applicantStatus == 0" style="color:#228B22">未处理</span>
+					<span v-if="form.applicantStatus == 1" style="color:#F00;">成功</span>
+					<span v-if="form.applicantStatus == 2" style="color:#808080">已拒绝</span>
 				</el-form-item>
 				
 				<el-form-item label="支付备注">
 					 {{form.remark}}
 				</el-form-item>
 				
-				<el-form-item label="拒绝原因">
-				    {{form.refuseReason}}
-				</el-form-item>
-				
 				<el-form-item label="申请时间">
-				    {{timeTransition(form.applicantTime)}}
+				    {{form.applicantTime}}
 				</el-form-item>
 				
 				<el-form-item label="处理时间">
-				    {{timeTransition(form.processingTime)}}
+				    {{form.processingTime}}
 				</el-form-item>
 
             </el-form>
@@ -184,7 +171,7 @@
 		<el-dialog title="提示" :visible.sync="affirmVisible" width="500px" center>
 		    <el-form ref="form" :model="affirmForm" label-width="82px">
 		        <el-form-item :label="label1">
-		           <el-input v-model="affirmForm.amount" :disabled="true" placeholder="提现金额" class="handle-input mr10"></el-input>
+		           <el-input v-model="affirmForm.cashAccount" :disabled="true" placeholder="提现金额" class="handle-input mr10"></el-input>
 		        </el-form-item>
 		    	
 		        <el-form-item :label="label2" >
@@ -242,7 +229,7 @@
                     transferState: 1,
                 },
 				page:{
-					pageSize:10,
+					pageSize:20,
 					pageNum: 1,
 					total: 0,
 				},
@@ -289,15 +276,14 @@
 				endTime = this.time[1]
               }
                 let vue = this
-                get("web/withdrawal/selectWithdrawalList",{
+                get("server-admin/zfbCashWithdrawal/list",{
                     params: {
-						withdrawalType: 1,
-                        applicantStatus: this.applicantStatus,
+                        cashStatus: this.applicantStatus,
 						keyWord: this.keyWord,
-						startTime: startTime,
-						endTime: endTime,
+						startTime: this.timeTransition(startTime),
+						endTime: this.timeEndTransition(endTime), 
 						
-						currentPage: pageNum,
+						pageNum: pageNum,
 						pageSize: vue.page.pageSize,
 						total: vue.page.total,
                     }
@@ -323,18 +309,38 @@
 			timeTransition(beginTime){
 				//转换时间
 				if (beginTime == null) {
-					return	'';
+					return	null;
 				} else if(beginTime == ''){
-					return	'';
+					return	null;
 				}
-				let d = new Date( Number(beginTime) );    //根据时间戳生成的时间对象
-				let date = (d.getFullYear()) + "-" + 
-						   (d.getMonth() + 1) + "-" +
-						   (d.getDate()) + " " + 
-						   (d.getHours()) + ":" + 
-						   (d.getMinutes()) + ":" + 
-						   (d.getSeconds());
-				return	date;
+				const dateTime = new Date(beginTime)
+			    const year = dateTime.getFullYear()
+			    const month = dateTime.getMonth() + 1
+			    const date = dateTime.getDate()
+			    const hour = dateTime.getHours()
+			    const minute = dateTime.getMinutes()
+			    const second = dateTime.getSeconds()
+				var a = year+"-"+month+"-"+date+" 00:00:00";
+				return a;
+			  
+			},
+			timeEndTransition(beginTime){
+				//转换时间
+				if (beginTime == null) {
+					return	null;
+				} else if(beginTime == ''){
+					return	null;
+				}
+				const dateTime = new Date(beginTime)
+			    const year = dateTime.getFullYear()
+			    const month = dateTime.getMonth() + 1
+			    const date = dateTime.getDate()
+			    const hour = dateTime.getHours()
+			    const minute = dateTime.getMinutes()
+			    const second = dateTime.getSeconds()
+				var a = year+"-"+month+"-"+date+" 23:59:59";
+				return a;
+			  
 			},
             search() {
                 this.is_search = true;
@@ -348,14 +354,13 @@
             handleEdit(index, row) {
                 
                 this.form = {
-                   wechatId: row.wechatId,//微信id
-                   amount: row.amount,//提现金额
-                   applicantStatus: row.applicantStatus,//状态
+                   wechatId: row.wechatNickname,//微信id
+                   cashAccount: row.cashAccount,//提现金额
+                   applicantStatus: row.cashStatus,//状态
                    
                    remark: row.remark,//备注
-				   refuseReason: row.refuseReason,//拒绝原因
-                   applicantTime: row.applicantTime,//申请时间
-                   processingTime: row.processingTime,//处理时间 
+                   applicantTime: row.createDate,//申请时间
+                   processingTime: row.updateDate,//处理时间 
                 }
                 this.editVisible = true;
             },
@@ -393,21 +398,26 @@
 					/* this.label3 = "类型"; */
 				}
 				this.affirmForm = {
-					amount: row.amount,
+					cashAccount: row.cashAccount,
 					id: row.id,
 					remark: row.remark,
-					transferState: 1,
 				}
             },
 			affirmMsg(){
 			//确认信息
 				this.affirmVisible = false;
-				post("web/withdrawal/updateSum",this.affirmForm)
+				get("server-admin/zfbCashWithdrawal/updateZfbAdoptOrRefuse",{
+                   params: {
+                        id:this.affirmForm.id,
+                        cashStatus:1,
+						remark:this.affirmForm.remark,
+						}
+                   
+                })
 				.then( (data) => {
 					
 				    if (data.data.status == 200) {
-				    	console.log(data.data.data)
-				    	this.$message.success(data.data.msg);
+				    	this.$message.success("审核成功~");
 				    	this.getData()
 				    	
 				    } else{
@@ -422,12 +432,19 @@
             // 确定拒绝
             deleteRow(){
                this.affirmVisible = false;
-               post("web/withdrawal/updateRefuseSum",this.affirmForm)
+               get("server-admin/zfbCashWithdrawal/updateZfbAdoptOrRefuse",{
+                  params: {
+                       id:this.affirmForm.id,
+                       cashStatus:2,
+               		remark:this.affirmForm.remark,
+               		}
+                  
+               })
                .then( (data) => {
                	
                    if (data.data.status == 200) {
                    	console.log(data.data.data)
-                   	this.$message.success(data.data.msg);
+                   	this.$message.success("拒绝成功~");
                    	this.getData()
                    	
                    } else{
