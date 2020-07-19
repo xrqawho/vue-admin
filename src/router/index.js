@@ -97,6 +97,11 @@ export default new Router({
 				    meta: { title: 'app首页公告' }
 				},
 				{
+				    path: '/appPopupAndFloating',
+				    component: resolve => require(['../components/page/shengya/appPopupAndFloating.vue'], resolve),
+				    meta: { title: 'app首页弹窗和浮窗' }
+				},
+				{
 				    path: '/orderTask',
 				    component: resolve => require(['../components/page/shengya/orderTask.vue'], resolve),
 				    meta: { title: '订单任务' }
