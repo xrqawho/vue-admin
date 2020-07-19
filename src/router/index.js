@@ -102,10 +102,15 @@ export default new Router({
 				    meta: { title: '订单任务' }
 				},
                 {
-                    path: '/qiniuyun',
-                    component: resolve => require(['../components/page/shengya/qiniuyun.vue'], resolve),
-                    meta: {title: '七牛云'}
+                    path: '/appLabel',
+                    component: resolve => require(['../components/page/shengya/appLabel.vue'], resolve),
+                    meta: {title: '首页5眼'}
                 },
+				{
+				    path: '/appSwitch',
+				    component: resolve => require(['../components/page/shengya/appSwitch.vue'], resolve),
+				    meta: {title: 'app配置'}
+				},
                 {
                     path: '/AcquaintanceSet',
                     component: resolve => require(['../components/page/shengya/AcquaintanceSet.vue'], resolve),
