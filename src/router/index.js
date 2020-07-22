@@ -91,6 +91,16 @@ export default new Router({
                     component: resolve => require(['../components/page/shengya/ImageHosting.vue'], resolve),
                     meta: {title: '图片空间'}
                 },
+				{
+				    path: '/userRedPackage',
+				    component: resolve => require(['../components/page/shengya/userRedPackage.vue'], resolve),
+				    meta: {title: '兑换红包列表'}
+				},
+				{
+				    path: '/userRedPackageList',
+				    component: resolve => require(['../components/page/shengya/userRedPackageList.vue'], resolve),
+				    meta: {title: '用户红包'}
+				},
 				 {
 				    path: '/appNotice',
 				    component: resolve => require(['../components/page/shengya/appNotice.vue'], resolve),
