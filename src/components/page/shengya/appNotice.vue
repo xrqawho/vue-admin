@@ -20,6 +20,8 @@
                 
                 <el-table-column prop="noticeTitle" label="公告标题"  >
                 </el-table-column>
+				<el-table-column prop="titleColor" label="标题颜色"  >
+				</el-table-column>
                 <el-table-column prop="noticeUrl" label="公告图片" >
 					<template slot-scope="scope">
 					 <img :src="scope.row.noticeUrl" width="150" height="150" class="head_pic"/>
@@ -310,6 +312,7 @@
 						enabled:1,
 						noticeUrl:"http://qiniuimage.shenggongzi.cn/FjmmVxzQS3vQsvvwEUe7Ofg_b2TO?1584084840146",
 						noticeTitle:"",
+						titleColor:"",
 						noticeBeginTime:"",
 						noticeEndTime:"",
 						itemId: "",
@@ -326,6 +329,7 @@
 						id:row.id,
 					    noticeUrl: row.noticeUrl,
 					    noticeTitle: row.noticeTitle,
+						titleColor:row.titleColor,
 						noticeSort: row.noticeSort,
 					}
 					this.oldForm = JSON.parse(JSON.stringify(this.form))
@@ -412,6 +416,7 @@
 					noticeUrl: this.form.noticeUrl,
 					noticeTitle: this.form.noticeTitle,
 					enabled: this.form.enabled,
+					titleColor:this.form.titleColor,
 					noticeSort:this.form.noticeSort,
 					noticeStartTime: this.timeTransition(this.StartEndTime[0]),
 					noticeEndTime: this.timeTransition(this.StartEndTime[1]),
