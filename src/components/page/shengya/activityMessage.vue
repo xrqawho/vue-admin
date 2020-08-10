@@ -2,7 +2,7 @@
     <div class="centCommission">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i>消息模板</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i>活动消息</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <el-alert
@@ -13,14 +13,17 @@
         </el-alert>
         <div class="container">
             <div class="handle-box">
-                <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">添加消息模板</el-button>
+                <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">添加活动消息</el-button>
                 
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 
                 <el-table-column prop="id" label="ID"  >
                 </el-table-column>
-				<el-table-column prop="messageType" label="消息类型"  >
+				<el-table-column prop="type" label="消息类型"  >
+					<template slot-scope="scope">
+					 {{msgType(scope.row.type)}}
+					</template>
 				</el-table-column>
                 <el-table-column prop="title" label="标题" >
                 </el-table-column>
@@ -33,8 +36,16 @@
 				</el-table-column>
              <el-table-column prop="jumpLink" label="跳转链接">
              </el-table-column>
-                <el-table-column prop="remark" label="备注说明">
+                <el-table-column prop="startTime" label="开始时间">
                 </el-table-column>
+				<el-table-column prop="endTime" label="结束时间">
+				</el-table-column>
+				<el-table-column prop="noOff" label="开关"  >
+					<template slot-scope="scope">
+					 {{msgNoOff(scope.row.noOff)}}
+					</template>
+				</el-table-column>
+				
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button type="text"  @click="handleEdit(2, scope.row)">编辑</el-button>
@@ -59,7 +70,7 @@
 							style="width: 70%;margin: 0 auto;">
 							
 						<el-form-item class="label_awarn"  label="消息类型" >
-							<el-select v-model="form.messageType" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
+							<el-select v-model="form.type" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
 							     <el-option :key="itme.value" v-for="itme in platformTypeList" :label="itme.name"
 							               :value="itme.value">{{itme.name}}
 							    </el-option>
@@ -85,7 +96,7 @@
 						</el-form-item >
 							
 							
-						<el-form-item class="label_awarn" label="公告状态:" >
+						<el-form-item class="label_awarn" label="跳转类型:" >
 							<label><input v-model="form.jumpType" type="radio" value="1" >外部跳转</label>
 							<label><input v-model="form.jumpType" type="radio" value="0" >内部跳转</label>
 						</el-form-item >
@@ -99,13 +110,19 @@
 								</el-input>
 							</el-form-item >
 					</el-form-item>
-					<el-form-item class="label_awarn" label="备注说明:" >
-						<el-input
-						  type="text"
-						  placeholder="请输入"
-						  v-model="form.remark">
-						</el-input>
+					<el-form-item class="label_awarn" label="开关:" >
+						<label><input v-model="form.noOff" type="radio" value="1" >关</label>
+						<label><input v-model="form.noOff" type="radio" value="0" >开</label>
 					</el-form-item >
+						<el-form-item class="label_awarn" label="开始结束时间:" >
+							<el-date-picker
+							      v-model="StartEndTime"
+							      type="datetimerange"
+							      range-separator="至"
+							      start-placeholder="开始日期"
+							      end-placeholder="结束日期">
+							    </el-date-picker>
+						</el-form-item >
 				</el-form>
 				<span slot="footer" class="dialog-footer">
 					<el-button @click="editVisible = false">取 消</el-button>
@@ -185,9 +202,9 @@
 				judgeTitle: "新增",
 				list:[],
 				platformTypeList:[
-				    {name: '未登录弹窗', value: "1"},
-				    {name: '新人免单', value: "2"},
-					{name: '首单', value: "3"},
+				    {name: '全部用户', value: 0},
+				    {name: '已下单用户', value: 1},
+					{name: '未下单用户', value: 2},
 				],
             }
         },
@@ -212,7 +229,7 @@
             // 获取数据
             getData(pageNum) {
                 let vue = this
-                get("server-admin/appMessageTemple/list",{
+                get("server-admin/admin/message/getActivityMessageList",{
                    params: {
                         pageNum:pageNum,
                         pageSize: vue.page.pageSize,
@@ -242,14 +259,16 @@
 				this.$refs.upload.clearFiles()
 			}, */
 			
-			funPictureStatus(value){
+			msgType(value){
 				//平台
 				// console.log(value)
 				switch(value) {
 					 case 1:
-						return "已过期";
+						return "已下单用户";
+					 case 2:
+						return "未下单用户";
 					 case 0:
-						return "正常";
+						return "全部用户";
 					 default:
 						return "未知";
 				}
@@ -264,7 +283,16 @@
 						return "未知";
 				}
 			},
-			
+			msgNoOff(value){
+				switch(value) {
+				 case 1:
+					return "关";
+				 case 0:
+					return "开";
+				 default:
+					return "未知";
+					}
+			},
             search() {
                 this.is_search = true;
             },
@@ -297,7 +325,7 @@
 					this.form = {
 						
 						id:"",
-						messageType:"",
+						type:"",
 						title:"",
 						content:"",
 						jumpType:"0",
@@ -312,14 +340,15 @@
 					this.judgeTitle = "编辑"
 					this.form = {
 						
-						messageType: row.messageType,
+						type: row.type,
 						id:row.id,
 					    title: row.title,
 					    content: row.content,
 						jumpType:row.jumpType,
 						jumpLink: row.jumpLink,
-						remark:row.remark,
+						noOff:row.noOff,
 						}
+					this.StartEndTime =  [ new Date(Number(new Date(row.startTime))) , new Date(Number(new Date(row.endTime)))],
 					this.oldForm = JSON.parse(JSON.stringify(this.form))
 				}
             },
@@ -331,7 +360,7 @@
             },
             deleteRow() {
 				 this.delVisible = false;
-                post("server-admin/appMessageTemple/insertOrUpdate",{
+                post("server-admin/admin/message/insertOrUpdate",{
 						id: this.id,
 						delFlag: 1,
                 })
@@ -367,26 +396,25 @@
 					this.$message.error("内容不能为空！");
 					return "内容不能为空！"
 				}
-				
-				
-				if (this.form.messageType == null || this.form.messageType == ''){
+				/* if (this.form.type == null || this.form.type == ''){
 					this.$message.error("消息类型不能为空！");
 					return "消息类型不能为空！"
-				} 
+				} */
 				
 				
 				
 				this.editVisible = false;
-               console.log(this.form)
-				post("server-admin/appMessageTemple/insertOrUpdate",{
+				post("server-admin/admin/message/insertOrUpdate",{
 					
 					id: this.form.id,
-					messageType: this.form.messageType,
+					type: this.form.type,
 					title: this.form.title,
 					content: this.form.content,
 					jumpType:this.form.jumpType,
 					jumpLink:this.form.jumpLink,
-					remark:	this.form.remark,
+					noOff:this.form.noOff,
+					startTime: this.timeTransition(this.StartEndTime[0]),
+					endTime: this.timeTransition(this.StartEndTime[1]),
 				})
 				.then((data) => {
 					if (data.data.status == 200) {

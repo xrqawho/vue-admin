@@ -17,110 +17,82 @@
                         end-placeholder="结束日期">
                 </el-date-picker>
 
-                店铺类型：
-                <el-select v-model="shoptype" placeholder="请选择" class="handle-select mr10">
-                    <el-option key="1" label="请选择" value=""></el-option>
-                    <el-option v-for="itme in storeTypeList" :label="itme.name" :value="itme.Value">{{itme.name}}
-                    </el-option>
-                    <!-- <el-option key="2" label="总公司" value="总公司"></el-option> -->
-                </el-select>
-                分类：
-                <el-select v-model="fqcat" placeholder="请选择" class="handle-select mr10">
-                    <el-option key="1" label="请选择" value=""></el-option>
-                    <el-option v-for="itme in ClassifyList" :label="itme.cname" :value="itme.cid">{{itme.cname}}
-                    </el-option>
-                    <!-- <el-option key="2" label="总公司" value="总公司"></el-option> -->
-                </el-select>
-                <div style="width: 20%;display: inline-block;">
-                    <span>价格区间： </span>
-                    <el-input style="width: 20%" v-model="minItemprice" placeholder="小"
-                              class="handle-input mr10"></el-input>
-                    <span>— &nbsp; </span>
-                    <el-input style="width: 20%" v-model="maxItemprice" placeholder="大"
+                <div style="width: 30%;display: inline-block;">
+					 <span>名称： </span>
+                    <el-input style="width: 80%" v-model="keyWord" placeholder="请输入关键字名称搜索"
                               class="handle-input mr10"></el-input>
                 </div>
-                <div style="width: 20%;display: inline-block;">
-                    <span>销量区间： </span>
-                    <el-input style="width: 20%" v-model="minItemsale" placeholder="小"
-                              class="handle-input mr10"></el-input>
-                    <span>— &nbsp; </span>
-                    <el-input style="width: 20%" v-model="maxItemsale" placeholder="大"
-                              class="handle-input mr10"></el-input>
-                </div>
-                <el-input v-model="itemtitle" placeholder="请输入关键字搜索" class="handle-input mr10"></el-input>
-                <el-input v-model="itemid" placeholder="请输入ID搜索" class="handle-input mr10"></el-input>
+				<div style="width: 20%;display: inline-block;">
+				    <span>ID： </span>
+				    <el-input style="width: 80%" v-model="itemId" placeholder="请输入ID搜索"
+				              class="handle-input mr10"></el-input>
+				</div>
                 <el-button type="primary" icon="el-icon-search" @click="getData(1)">搜索</el-button>
             </div>
-            <el-table v-loading="loading" :data="data" border class="table" ref="multipleTable"
+            <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
                       @selection-change="handleSelectionChange">
-                <el-table-column prop="itemid" label="宝贝ID">
+                <el-table-column prop="itemId" label="宝贝ID">
                     <template slot-scope="scope">
-                        <div @click="taobao(scope.row.itemid)" style="cursor: pointer;">
-                            {{scope.row.itemid}}
+                        <div @click="taobao(scope.row.itemId)" style="cursor: pointer;color: #4873FF;">
+                            {{scope.row.itemId}}
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="itempic" label="缩略图">
+                <el-table-column prop="itemMainPic" label="缩略图">
                     <template slot-scope="scope">
-                        <img style="width: 90%;" :src="scope.row.itempic" alt="">
+                        <img style="width: 90%;" :src="scope.row.itemMainPic" alt="">
                     </template>
                 </el-table-column>
-                <el-table-column prop="itemshorttitle" label="商品名称">
+                <el-table-column prop="itemDtitle" label="商品名称">
                 </el-table-column>
-                <el-table-column prop="fqcat" label="分类">
+				<el-table-column prop="aliasDtitle" label="自定义名称">
+				</el-table-column>
+                <el-table-column prop="classifyType" label="分类">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.fqcat=='0'">推荐</span>
-                        <span v-else-if="scope.row.fqcat=='1'">女装</span>
-                        <span v-else-if="scope.row.fqcat=='2'">男装</span>
-                        <span v-else-if="scope.row.fqcat=='3'">内衣配饰</span>
-                        <span v-else-if="scope.row.fqcat=='4'">美妆</span>
-                        <span v-else-if="scope.row.fqcat=='6'">鞋靴箱包</span>
-                        <span v-else-if="scope.row.fqcat=='9'">母婴</span>
-                        <span v-else-if="scope.row.fqcat=='10'">居家</span>
-                        <span v-else-if="scope.row.fqcat=='11'">美食</span>
-                        <span v-else-if="scope.row.fqcat=='12'">数码家电</span>
-                        <span v-else-if="scope.row.fqcat=='15'">文体车品</span>
+                        <span v-if="scope.row.classifyType=='0'">推荐</span>
+                        <span v-else-if="scope.row.classifyType=='1'">女装</span>
+                        <span v-else-if="scope.row.classifyType=='2'">男装</span>
+                        <span v-else-if="scope.row.classifyType=='3'">内衣配饰</span>
+                        <span v-else-if="scope.row.classifyType=='4'">美妆</span>
+						<span v-else-if="scope.row.classifyType=='5'">鞋品箱包</span>
+                        <span v-else-if="scope.row.classifyType=='6'">母婴儿童</span>
+						<span v-else-if="scope.row.classifyType=='7'">居家</span>
+						<span v-else-if="scope.row.classifyType=='8'">美食</span>
+						 <span v-else-if="scope.row.classifyType=='9'">数码家电</span>
+                        <span v-else-if="scope.row.classifyType=='10'">文体车品</span>
+                        <span v-else-if="scope.row.classifyType=='15'">文体车品</span>
+						<span v-else-if="scope.row.classifyType=='14'">其他</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="itemprice" label="原价">
+                <el-table-column prop="originalPrice" label="原价">
                 </el-table-column>
-                <el-table-column prop="itemendprice" label="劵后价">
+                <el-table-column prop="actualPrice" label="劵后价">
                 </el-table-column>
-                <el-table-column prop="couponmoney" label="劵否">
+                <el-table-column prop="couponPrice" label="劵额">
+                </el-table-column>
+                <el-table-column prop="itemCommissionRate" label="比率">
+                </el-table-column>
+                <el-table-column prop="monthSales" label="销量">
+                </el-table-column>
+                <el-table-column prop="shopType" label="来源">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.couponmoney">有券</span>
-                        <span v-else="scope.row.couponmoney">无券</span>
+                        <span v-if="scope.row.shopType == 1">天猫</span>
+                        <span v-else="scope.row.shopType == 0">淘宝</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="couponmoney" label="劵额">
+                <el-table-column prop="sort" label="排序(倒序)">
                 </el-table-column>
-
-                <el-table-column prop="commission" label="佣金">
-
-                </el-table-column>
-
-                <el-table-column prop="tkrates" label="比率">
-                </el-table-column>
-                <el-table-column prop="itemsale" label="销量">
-                </el-table-column>
-                <el-table-column prop="shoptype" label="来源">
-                    <template slot-scope="scope">
-                        <span v-if="scope.row.shoptype == 'B' ">天猫</span>
-                        <span v-else="scope.row.shoptype == 'C'">淘宝</span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="itemRanking" label="排序">
-                </el-table-column>
-                <!--<el-table-column prop="type" label="状态" :formatter="formatter">
-                    可用
-                </el-table-column>-->
-                <!-- <el-table-column prop="updateTime" label="发布时间">
-                     <template slot-scope="scope">
-                         {{timeTransition(scope.row.updateTime)}}
-                     </template>
-                 </el-table-column>-->
-
-                <el-table-column prop="rebateType" label="返利类型" :formatter="rebateFormatter">
+				<el-table-column prop="sourceType" label="拉取来源">
+				    <template slot-scope="scope">
+				        <span v-if="scope.row.sourceType == 1">好单</span>
+				        <span v-else="scope.row.sourceType == 2">大淘</span>
+				    </template>
+				</el-table-column>
+				<el-table-column prop="createDate" label="开始时间">
+                </el-table-column>	
+				<el-table-column prop="updateDate" label="结束时间">
+				</el-table-column>
+              <!--  <el-table-column prop="rebateType" label="返利类型" :formatter="rebateFormatter">
                 </el-table-column>
 
                 <el-table-column prop="rebateAmt" label="返利金额">
@@ -130,7 +102,7 @@
                 </el-table-column>
 
                 <el-table-column show-overflow-tooltip prop="giftUrl" label="淘礼金url">
-                </el-table-column>
+                </el-table-column> -->
 
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
@@ -138,8 +110,6 @@
                         <el-button type="text" icon="el-icon-delete" class="red"
                                    @click="handleDelete(scope.$index, scope.row)">删除
                         </el-button>
-                        <el-button type="text" @click="sortUp(1,scope.row)">上移</el-button>
-                        <el-button type="text" @click="sortDown(1, scope.row)">下移</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -154,33 +124,23 @@
             <el-form ref="form" :model="form" label-width="80px">
 
                 <el-form-item label="商品ID" v-if="judge == 1">
-                    <el-input v-model="form.id"></el-input>
+                    <el-input v-model="form.itemId"></el-input>
                 </el-form-item>
-                <el-form-item label="商品名称">
-                    <el-input v-model="form.name"></el-input>
+				 <el-form-item label="命名名称">
+				    <el-input v-model="form.aliasDtitle"></el-input>
+				</el-form-item>
+                <el-form-item label="排序(倒序)">
+                    <el-input v-model="form.sort"></el-input>
                 </el-form-item>
-                <el-form-item label="返利金额">
-                    <el-input v-model="form.rebateAmt"></el-input>
-                </el-form-item>
-                <el-form-item label="返利数量">
-                    <el-input v-model="form.rebateNum"></el-input>
-                </el-form-item>
-                <el-form-item class="label_awarn" label="返利类型">
-                    <el-select v-model="form.rebateType" placeholder="请选择" class="goodsPlatform mr10">
-                        <el-option :key="itme.value" v-for="itme in linkTypeList" :label="itme.name"
-                                   :value="itme.value">{{itme.name}}
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item class="label_awarn" v-if="form.rebateType == 2" label="淘礼金url">
-                    <el-input
-                            type="text"
-                            placeholder="请以http或者https开头"
-                            v-model="form.giftUrl">
-                    </el-input>
-                </el-form-item>
-                <el-form-item label="排序">
-                    <el-input v-model="form.itemRanking"></el-input>
+               
+                <el-form-item class="label_awarn" label="发布时间">
+					<el-date-picker
+					      v-model="insertOrUpdateTime"
+					      type="datetimerange"
+					      range-separator="至"
+					      start-placeholder="开始日期"
+					      end-placeholder="结束日期">
+					    </el-date-picker>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -227,6 +187,7 @@
                 descOrAsc: null,//排序的升序降序1降2升
                 // 时间
                 time: null,
+				insertOrUpdateTime:null,
 
                 endCreateTime: null,//发布的开始时间
                 startCreateTime: null,
@@ -240,8 +201,8 @@
                 maxItemprice: "",//价格大
                 minItemprice: "",//价格小
                 // 销量
-                maxItemsale: null,//销量大
-                minItemsale: null,//销量小
+                keyWord: null,//销量大
+                itemId: null,//销量小
 
                 shoptype: "",//店铺类型
 
@@ -252,17 +213,15 @@
                 taoBaoGift: [],
                 dateTime: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
                 form: {
-                    name: '',
-                    id: '',
-                    fqcat: '',
-                    itemRanking: '',
-                    rebateType: '',
-                    rebateNum: '',
-                    rebateAmt: '',
-                    giftUrl: '',
+                    itemId: '',
+                    itemDtitle: '',
+                    aliasDtitle: '',
+                    sort: '',
+                    startTime : '',
+                    endTime:'',
                 },
                 page: {
-                    pageSize: 10,
+                    pageSize: 20,
                     pageNum: 1,
                     total: 0,
                 },
@@ -293,16 +252,16 @@
         },
         created() {
             this.getData(1);
-            this.getClassifyData()
-            this.getImgData()
+            //this.getClassifyData()
+            //this.getImgData()
         },
         computed: {
-            data() {
+           /* data() {
                 return this.tableData.filter((d) => {
                     let is_del = false;
                     return d
                 })
-            }
+            } */
         },
         methods: {
 
@@ -326,45 +285,24 @@
                     startCreateTime = this.time[1]
                 }
                 let vue = this
-                post("web/appGoods/goodsRecommend", {
+                post("server-admin/appGoodsHander/list",{
                     // 排序
-                    column: this.column,//排序的字段名
-                    descOrAsc: this.descOrAsc,//排序的升序降序1降2升
-                    // 时间
-                    endCreateTime: endCreateTime,//发布的开始时间
-                    startCreateTime: startCreateTime,
-
-                    fqcat: this.fqcat,//分类
-
-                    itemid: this.itemid,//商品id
-                    itemtitle: this.itemtitle,//商品标题
-
-                    // 价格
-                    maxItemprice: this.maxItemprice,//价格大
-                    minItemprice: this.minItemprice,//价格小
-                    // 销量
-                    maxItemsale: this.maxItemsale,//销量大
-                    minItemsale: this.minItemsale,//销量小
-
-                    shoptype: this.shoptype,//店铺类型
-
-
-                    //分页
+					startTime: endCreateTime,
+					endTime:startCreateTime,
+					itemId:this.itemId,
+					keyWord:this.keyWord,
                     pageNum: pageNum,
                     pageSize: vue.page.pageSize,
-                    total: vue.page.total,
-
-                })
+				})
                     .then(function (data) {
                         vue.loading = false;
                         let arr = []
+						//alert(JSON.stringify(data))
                         //一个数组用来接收加工后台传过来的数据
-                        console.log(data.data.data.records)
-                        //alert("1111111111111111======="+JSON.stringify(data.data.data.records))
-                        vue.tableData = data.data.data.records;
+                        vue.tableData = data.data.data.list;
 
-                        // vue.page.pageSize = Number(data.data.data.size);
-                        vue.page.pageNum = Number(data.data.data.current);
+                         //vue.page.pageSize = Number(data.data.data.pageSize);
+                        vue.page.pageNum = Number(data.data.data.pageNum);
                         vue.page.total = Number(data.data.data.total)
 
                     })
@@ -372,45 +310,20 @@
                         console.log(error);
                     });
             },
-            getClassifyData() {
-                get("web/appGoods/getClassify", {
-                    params: {}
-
-                })
-                    .then((data) => {
-                        this.ClassifyList = data.data.data;
-
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-            },
-            getImgData() {
-
-                get("web/bannerPicture/uploadPic", {
-                    params: {}
-                })
-                    .then((data) => {
-
-                        this.qiniu.token = data.data.data.token;
-                        this.imgSite = data.data.data.site;
-                        this.imgUpsite = data.data.data.upsite;
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-            },
             addGoods() {
+				
+				let endCreateTime = null, startCreateTime = null
+				if (this.insertOrUpdateTime) {
+				    endCreateTime = this.insertOrUpdateTime[0]
+				    startCreateTime = this.insertOrUpdateTime[1]
+				}
                 //添加接口
-                post("web/goodsRecommend/insert", {
-                    itemid: this.form.id,
-                    itemRanking: this.form.itemRanking,
-                    itemtitle: this.form.name,
-                    rebateType: this.form.rebateType,
-                    rebateNum: this.form.rebateNum,
-                    rebateAmt: this.form.rebateAmt,
-                    giftUrl: this.form.giftUrl,
-                    tableId: this.tableId,
+                post("server-admin/appGoodsHander/insert", {
+                    itemId: this.form.itemId,
+                   aliasDtitle: this.form.aliasDtitle,
+                   sort: this.form.sort,
+                   startTime : endCreateTime,
+                   endTime:startCreateTime,
                 })
                     .then((data) => {
                         console.log(data)
@@ -429,21 +342,22 @@
             },
             updateGoods() {
                 //修改接口
-
-                post("web/goodsRecommend/update", {
-                    itemid: this.form.id,
-                    itemRanking: this.form.itemRanking,
-                    itemshorttitle: this.form.name,
-                    tableId: this.tableId,
-                    syTableId: this.syTableId,
-                    rebateType: this.form.rebateType,
-                    rebateNum: this.form.rebateNum,
-                    rebateAmt: this.form.rebateAmt,
-                    giftUrl: this.form.giftUrl,
+				let endCreateTime = null, startCreateTime = null
+				if (this.insertOrUpdateTime) {
+				    endCreateTime = this.insertOrUpdateTime[0]
+				    startCreateTime = this.insertOrUpdateTime[1]
+				}
+                post("server-admin/appGoodsHander/update", {
+                    itemId: this.form.itemId,
+                    aliasDtitle: this.form.aliasDtitle,
+                    sort: this.form.sort,
+					startTime : endCreateTime,
+					endTime:startCreateTime,
+                    
                 })
                     .then((data) => {
                         if (data.data.status == 200) {
-                            this.$message.success(data.data.msg);
+                            this.$message.success("修改成功~");
                             this.getData(1);
                             this.editVisible = false;
                         } else {
@@ -453,71 +367,6 @@
                     .catch(function (error) {
                         console.log(error);
                     });
-            },
-            // 上移按钮
-            sortUp(index, row) {
-                //alert("row======"+row)
-                /*if (index === 0) {
-                    this.$message({
-                        message: '已经是列表中第一个！',
-                        type: 'warning'
-                    })
-                } else {
-                    let temp = this.data[index - 1]
-                    Vue.set(this.data, index - 1, this.data[index])
-                    Vue.set(this.data, index, temp)
-                }*/
-                //alert("id======>>>>>>>>>>>>>" + row.itemid);
-                //alert("111==="+this.fqcat);
-                post("web/goodsRecommend/sortUp", {
-                    itemid: row.itemid,
-                    fqcat: this.fqcat,
-                    shoptype:this.shoptype,
-                })
-                    .then((data) => {
-                        if (data.data.status == 200) {
-                            this.$message.success(data.data.msg);
-                            this.getData(1);
-                            //this.editVisible = false;
-                        } else {
-                            this.$message.error(data.data.msg);
-                        }
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-            },
-            // 下移按钮
-            sortDown(index, row) {
-                /*if (index === (this.data.length - 1)) {
-                    this.$message({
-                        message: '已经是列表中最后一个！',
-                        type: 'warning'
-                    })
-                } else {
-                    let i = this.data[index + 1]
-                    Vue.set(this.data, index + 1, this.data[index])
-                    Vue.set(this.data, index, i)
-                }*/
-                //alert("id==========>>>>>>>>>>>>>" + row.itemid);
-                post("web/goodsRecommend/sortDown", {
-                    itemid: row.itemid,
-                    fqcat: this.fqcat,
-                    shoptype:this.shoptype,
-                })
-                    .then((data) => {
-                        if (data.data.status == 200) {
-                            this.$message.success(data.data.msg);
-                            this.getData(1);
-                            //this.editVisible = false;
-                        } else {
-                            this.$message.error(data.data.msg);
-                        }
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-
             },
             handleDelete(index, row) {
                 this.syTableId = row.syTableId;
@@ -606,31 +455,25 @@
                     this.judge = index;
                     this.judgeTitle = "新增"
                     this.form = {
-                        id: null,
-                        itemRanking: null,
+						itemId:null,
+                        itemDtitle: null,
                         name: null,
-                        rebateType: null,
-                        rebateNum: null,
-                        rebateAmt: null,
-                        giftUrl: null,
+                        aliasDtitle: null,
+                        sort: null,
                     }
+					this.insertOrUpdateTime = null;
                 } else {
                     this.judge = index;
                     this.judgeTitle = "编辑"
                     //console.log(row.goodsPictureUrl)
                     //alert("id-==="+row.syTableId);
                     this.form = {
-                        id: row.itemid,
-                        itemRanking: row.itemRanking,
-                        name: row.itemshorttitle,
-                        rebateType: row.rebateType,
-                        rebateNum: row.rebateNum,
-                        rebateAmt: row.rebateAmt,
-                        giftUrl: row.giftUrl,
+                        itemId: row.itemId,
+                        itemDtitle: row.itemDtitle,
+                        aliasDtitle: row.aliasDtitle,
+                        sort: row.sort,
                     }
-                    this.tableId = row.tableId;
-                    this.syTableId = row.syTableId;
-                    this.dialogImageUrl = row.goodsPictureUrl;
+					this.insertOrUpdateTime =  [ new Date(Number(new Date(row.createDate))) , new Date(Number(new Date(row.updateDate)))]
 
 
                 }
@@ -651,32 +494,6 @@
                     //修改
                     this.updateGoods()
                 }
-            },
-            //上传图片
-            handleSuccess(response, file, fileList) {
-                //成功的回调函数
-                console.log(response.key)
-                this.qiniuimage = this.imgSite + response.key
-                if (fileList.length == 1) {
-                    let upload = document.getElementsByClassName("el-upload--picture-card")
-                    upload[0].style.display = "none"
-                }
-            },
-            handleRemove(file, fileList) {
-                //删除的回调函数
-                console.log(file);
-                this.qiniuimage = null;
-                if (fileList.length == 0) {
-                    let upload = document.getElementsByClassName("el-upload--picture-card");
-                    upload[0].style.display = "inline-block";
-                    this.fileListLength = fileList.length;
-                }
-
-            },
-            handlePictureCardPreview(file) {
-
-                this.dialogImageUrl = file.url;
-                this.dialogVisible = true;
             },
         }
     }

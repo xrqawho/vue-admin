@@ -230,8 +230,13 @@ export default new Router({
                 {
                     path: '/msgModule',
                     component: resolve => require(['../components/page/shengya/msgModule.vue'], resolve),
-                    meta: {title: '消息模块'}
+                    meta: {title: '消息模板'}
                 },
+				{
+				    path: '/activityMessage',
+				    component: resolve => require(['../components/page/shengya/activityMessage.vue'], resolve),
+				    meta: {title: '活动消息'}
+				},
                 {
                     path: '/versionUpdating',
                     component: resolve => require(['../components/page/shengya/versionUpdating.vue'], resolve),
@@ -323,7 +328,7 @@ export default new Router({
                 {
                     path: '/test',
                     component: resolve => require(['../components/page/test.vue'], resolve),
-                    meta: {title: '省公子欢迎您'}
+                    meta: {title: '科海拓欢迎您'}
                 },
                 {
                     path: '/seckill',
@@ -333,7 +338,7 @@ export default new Router({
                 {
                     path: '/greet',
                     component: resolve => require(['../components/page/greet.vue'], resolve),
-                    meta: {title: '省公子欢迎您'}
+                    meta: {title: '科海拓欢迎您'}
                 },
                 {
                     path: '/aloneCommodityCentCommission',

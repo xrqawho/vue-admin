@@ -1,6 +1,6 @@
 <template>
     <div>
-       四创客管理系统
+      科海拓管理系统
     </div>
 </template>
 

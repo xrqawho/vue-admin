@@ -9,11 +9,13 @@
             <div class="handle-box">
                 <el-button type="primary" class="handle-del mr10" @click="addVisible = true">新增</el-button>
             </div>
-            <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 
-                <el-table-column prop="tableId" label="ID" >
+                <el-table-column prop="id" label="ID" >
                 </el-table-column>
-                <el-table-column prop="cname" label="分类名称">
+				<el-table-column prop="classifyId" label="分类ID">
+				</el-table-column>
+                <el-table-column prop="classifyName" label="分类名称">
                 </el-table-column>
                 <el-table-column prop="sort" label="排序" >
                 </el-table-column>
@@ -35,9 +37,12 @@
         <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
 			
             <el-form ref="form" :model="form" label-width="80px">
-                <el-form-item label="商品分类">
-                    <el-input v-model="form.cname"></el-input>
+                <el-form-item label="分类ID">
+                    <el-input v-model="form.classifyId"></el-input>
                 </el-form-item>
+				 <el-form-item label="商品分类名称">
+				    <el-input v-model="form.classifyName"></el-input>
+				</el-form-item>
                 <el-form-item label="列表排序">
                     <el-input v-model="form.sort"></el-input>
                 </el-form-item>
@@ -54,8 +59,11 @@
 		<el-dialog title="新增" :visible.sync="addVisible" width="30%">
 			
 		    <el-form ref="form" :model="add" label-width="80px">
-		        <el-form-item label="商品分类">
-		            <el-input v-model="add.cname"></el-input>
+				 <el-form-item label="分类ID">
+				    <el-input v-model="add.classifyId"></el-input>
+				</el-form-item>
+		        <el-form-item label="分类名称">
+		            <el-input v-model="add.classifyName"></el-input>
 		        </el-form-item>
 		        <el-form-item label="列表排序">
 		            <el-input v-model="add.sort"></el-input>
@@ -100,7 +108,8 @@
                     tableId: '',
                 },
 				add:{
-					cname: '',
+					classifyId: '',
+					classifyName:'',
 					sort: '',
 				},
 				page:{
@@ -113,15 +122,15 @@
             }
         },
         created() {
-            this.getData();
+            this.getData(1);
         },
         computed: {
-            data() {
+            /* data() {
                 return this.tableData.filter((d) => {
                     let is_del = false;
                     return d
                 })
-            }
+            } */
         },
         methods: {
             // 分页导航
@@ -138,11 +147,11 @@
                 //     console.log(this.tableData)
                 // })
                 let vue = this
-                get("web/goodsClassify/list",{
+                get("server-admin/goodsClassify/list",{
                     params: {
 						
 						
-                        currentPage: pageNum,
+                        pageNum: pageNum,
 						pageSize: vue.page.pageSize,
 						total: vue.page.total,
                     }
@@ -151,10 +160,11 @@
                     let arr = []
                     //一个数组用来接收加工后台传过来的数据
                     console.log(data.data.data.list)
-                    vue.tableData =   data.data.data.records;
+					//alert(JSON.stringify(data.data.data.list))
+                    vue.tableData =   data.data.data.list;
 					
-					// vue.page.pageSize = Number(data.data.data.size);
-					vue.page.pageNum =  Number(data.data.data.current);
+					 vue.page.pageSize = Number(data.data.data.pageSize);
+					vue.page.pageNum =  Number(data.data.data.pageNum);
 					vue.page.total =  Number(data.data.data.total)
                 })
                 .catch(function (error) {
@@ -163,8 +173,7 @@
             },
 			addClassify(){
 				this.addVisible = false;
-				// this.$message.success(`修改第 ${this.idx+1} 行成功`);
-				post("web/goodsClassify/add",this.add)
+				post("server-admin/goodsClassify/insertOrUpdate",this.add)
 				.then( (data) => {
 				    console.log(data.data.data)
 					if (data.data.status == 200) {
@@ -183,7 +192,8 @@
             handleEdit(index, row) {
                 
                 this.form = {
-                    cname:row.cname,
+                    classifyId:row.classifyId,
+					classifyName:row.classifyName,
 					sort:row.sort,
 					tableId: row.tableId,
                 }
@@ -191,7 +201,7 @@
             },
             handleDelete(index, row) {
                 //打开删除dialog，并传参
-				this.delId = row.tableId;
+				this.id = row.id;
                 this.delVisible = true;
 				
             },
@@ -232,8 +242,9 @@
             deleteRow(){
                 
                 this.delVisible = false;
-                post("web/goodsClassify/delete",{
-					ids:this.delId,
+                post("server-admin/goodsClassify/insertOrUpdate",{
+					id:this.id,
+					delFlag:1,
 				})
                 .then( (data) => {
                     console.log(data.data.data)
