@@ -1,669 +1,506 @@
 <template>
-    <div class="appPage" v-loading="loading">
+    <div class="centCommission">
+        <div class="crumbs">
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i>app公告</el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
         <el-alert
-                title="首页相关开关管理,开关即时请求"
-                type="info"
-                effect="dark"
-                :closable="false">
-        </el-alert>
-
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <div class="itme">登录页面是否打开</div>
-                <!-- 1开 0关 -->
-                <div>
-                    <el-radio v-model="loginPage" @change="changeUpdate(1,1)" :label="1">打开登录界面</el-radio>
-                    <el-radio v-model="loginPage" @change="changeUpdate(1,0)" :label="0">关闭登录界面</el-radio>
-                </div>
-            </el-col>
-            <el-col :span="8">
-                <div class="itme">5.56红包弹窗是否打开</div>
-                <div>
-                    <el-radio v-model="redPacket556" @change="changeUpdate(2,1)" :label="1">打开</el-radio>
-                    <el-radio v-model="redPacket556" @change="changeUpdate(2,0)" :label="0">关闭</el-radio>
-                </div>
-            </el-col>
-            <el-col :span="8">
-                <div class="itme">5.56红包弹窗叉号是否打开</div>
-                <div>
-                    <el-radio v-model="redPacketCross" @change="changeUpdate(3,1)" :label="1">打开</el-radio>
-                    <el-radio v-model="redPacketCross" @change="changeUpdate(3,0)" :label="0">关闭</el-radio>
-                </div>
-            </el-col>
-        </el-row>
-
-
-        <el-alert
-                title="任务界面开关管理"
-                type="info"
-                effect="dark"
-                :closable="false"
-
-        >
-        </el-alert>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <div class="itme">首次登录，任务阴影界面叉号是否打开</div>
-                <div>
-                    <el-radio v-model="FirstLoginMissionShadowCross" @change="changeUpdate(4,1)" :label="1">打开
-                    </el-radio>
-                    <el-radio v-model="FirstLoginMissionShadowCross" @change="changeUpdate(4,0)" :label="0">关闭
-                    </el-radio>
-                </div>
-            </el-col>
-            <el-col :span="8">
-                <div class="itme">任务界面，复制链接优惠弹框叉号开关</div>
-                <div>
-                    <el-radio v-model="taskPageCopyLinkAlertCross" @change="changeUpdate(5,1)" :label="1">打开</el-radio>
-                    <el-radio v-model="taskPageCopyLinkAlertCross" @change="changeUpdate(5,0)" :label="0">关闭</el-radio>
-                </div>
-            </el-col>
-            <el-col :span="8">
-                <div class="itme">任务界面，首购红包优惠弹窗叉号开关</div>
-                <div>
-                    <el-radio v-model="taskPageFirstPurchaseRedPacketAlertCross" @change="changeUpdate(6,1)" :label="1">
-                        打开
-                    </el-radio>
-                    <el-radio v-model="taskPageFirstPurchaseRedPacketAlertCross" @change="changeUpdate(6,0)" :label="0">
-                        关闭
-                    </el-radio>
-                </div>
-            </el-col>
-
-        </el-row>
-
-
-        <!-- <el-alert
-            title="消息界面开关管理"
+            title="温馨提示："
             type="info"
             effect="dark"
             :closable="false">
-          </el-alert>
-          <el-row :gutter="20"> -->
-        <!-- <el-col :span="8">
-              <div class="itme" >确认收货是否发送消息</div>
-              <div >
-                  <el-radio v-model="confirmReceipt" @change="changeUpdate(7,1)" :label="1">发送</el-radio>
-                  <el-radio v-model="confirmReceipt" @change="changeUpdate(7,0)" :label="0">不发送</el-radio>
-              </div>
-         </el-col> -->
-        <!-- <el-col :span="8">
-            <div class="itme" >订单结算是否发送消息</div>
-            <div>
-                <el-radio v-model="orderCloseAnAccount" @change="changeUpdate(8,1)" :label="1">发送</el-radio>
-                <el-radio v-model="orderCloseAnAccount" @change="changeUpdate(8,0)" :label="0">不发送</el-radio>
+        </el-alert>
+        <div class="container">
+			 <div class="handle-box">
+			    条件筛选 服务：
+			    <el-select v-model="select_cate" placeholder="请选择服务" class="handle-select mr10">
+					 <el-option key="3" label="全部" value=""></el-option>
+			        <el-option key="0" label="未使用" value="0"></el-option>
+					<el-option key="1" label="使用中" value="1"></el-option>
+					<el-option key="2" label="已被封" value="2"></el-option>
+			        <!-- <el-option key="2" label="总公司" value="总公司"></el-option> -->
+			    </el-select>
+			    <el-button type="primary" icon="el-icon-search" @click="getData(1)">搜索</el-button>
+			</div>
+            <div class="handle-box">
+                <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">添加公告</el-button>
+                
             </div>
-        </el-col>
-      </el-row>-->
-        <el-alert
-                title="分享域名设置"
-                type="info"
-                effect="dark"
-                :closable="false">
-        </el-alert>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrl" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrlTwo" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrlThree" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrlFour" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrlFive" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
+            <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+                
+                <el-table-column prop="id" label="ID"  >
+                </el-table-column>
+				<el-table-column prop="shareUrl" label="域名"  >
+				</el-table-column>
+                <el-table-column prop="remark" label="备注说明">
+                </el-table-column>
+				<el-table-column prop="shareType" label="分享类型" >
+					<template slot-scope="scope">
+					    {{enabledStatus(scope.row.shareType)}}
+					</template>
+				</el-table-column>
+				<el-table-column prop="useStatus" label="使用状态" >
+					<template slot-scope="scope">
+					    {{funPictureStatus(scope.row.useStatus)}}
+					</template>
+				</el-table-column>
+                <el-table-column prop="startTime" label="使用开始时间">
+                </el-table-column>
+				<el-table-column prop="endTime" label="使用结束时间">
+				</el-table-column>
+				
+                
+                <el-table-column label="操作" width="180" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text"  @click="handleEdit(2, scope.row)">编辑</el-button>
+                        <el-button type="text" icon="el-icon-delete" class="red"  @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next, jumper" :total="page.total" :page-size = "page.pageSize" :current-page="page.pageNum">
+                </el-pagination>
+            </div>
+        </div>
 
-
-        <el-alert
-                title="中间页分享域名设置"
-                type="info"
-                effect="dark"
-                :closable="false">
-        </el-alert>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrlTlj" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrlTwoTlj" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrlThreeTlj" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrlFourTlj" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-input v-model="shareUrlFiveTlj" style="width: 350px;" placeholder="请输入"></el-input>
-            </el-col>
-        </el-row>
-
-
-        <el-alert
-                title="支付宝提现直接转账金额"
-                type="info"
-                effect="dark"
-                :closable="false">
-        </el-alert>
-        <el-row :gutter="20">
-            <el-col :span="7.5">
-                <el-input v-model="zfbMoney" style="width: 200px;" placeholder="请输入金额"></el-input>
-            </el-col>
-            <el-col :span="5">
-                元(设0元全部走审核)
-            </el-col>
-        </el-row>
-
-
-        <el-alert
-                title="邀请赚钱相关开关管理"
-                type="info"
-                effect="dark"
-                :closable="false">
-        </el-alert>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <div class="itme">免单不算6元奖励开关</div>
-                <div>
-                    <el-radio v-model="Free6Yuan" @change="changeUpdate(9,1)" :label="1">不给奖励</el-radio>
-                    <el-radio v-model="Free6Yuan" @change="changeUpdate(9,0)" :label="0">给奖励</el-radio>
-                </div>
-            </el-col>
-        </el-row>
-
-        <el-alert
-                title="首页相关开关"
-                type="info"
-                effect="dark"
-                :closable="false">
-        </el-alert>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <div class="itme">导航栏开关</div>
-                <div>
-                    <el-radio v-model="navigationBar" @change="changeUpdate(11,1)" :label="1">开启</el-radio>
-                    <el-radio v-model="navigationBar" @change="changeUpdate(11,0)" :label="0">关闭</el-radio>
-                </div>
-            </el-col>
-
-            <!-- <el-col :span="8">
-              <div class="itme" >悬浮窗开关</div>
-              <div >
-                  <el-radio v-model="floatingWindow " @change="changeUpdate(12,1)" :label="1">开启</el-radio>
-                  <el-radio v-model="floatingWindow" @change="changeUpdate(12,0)" :label="0">关闭</el-radio>
-              </div>
-            </el-col> -->
-        </el-row>
-
-
-        <el-alert
-                title="红包金额设置"
-                type="info"
-                effect="dark"
-                :closable="false"
-
-        >
-        </el-alert>
-        <el-row :gutter="20">
-            <el-col :span="20">
-                购买低于
-                <el-input v-model="invitationRedMoneyOrderpriceLimit" style="width: 80px;" placeholder="请输入"></el-input>
-                元 订单，不给上级6元奖励。
-                解释：下级购买的东西低于设置的金额，不给上级返利
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="20">
-                邀请赚钱红包金额
-                <el-input v-model="invitationRedMoneyAmount" style="width: 80px;" placeholder="请输入"></el-input>
-                元
-                订单收获成功延迟
-                <el-input v-model="invitationRedMoneyExpireTime" style="width: 80px;" placeholder="请输入"></el-input>
-                天 红包到账
-
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="25">
-                复制链接查询优惠红包金额
-                <el-input v-model="newRedMoneyFixation" style="width: 80px;" placeholder="请输入"></el-input>
-                元
-                红包失效时间
-                <el-input v-model="newRedMoneyInvalidTime" style="width: 80px;" placeholder="请输入"></el-input>
-                天
-                解释：第一次在淘宝复制链接到省公子查询优惠返0.36元红包。配置金额
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="20">
-                首次复制链接查询优惠并下单奖励
-                <el-input v-model="taskRedMoneyAmount" style="width: 80px;" placeholder="请输入"></el-input>
-                元 红包失效时间
-                <el-input v-model="taskRedMoneyInvalidTime" style="width: 80px;" placeholder="请输入"></el-input>
-                天 订单收货成功延迟
-                <el-input v-model="taskRedMoneyExpireTime" style="width: 80px;" placeholder="请输入"></el-input>
-                天 红包到账
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="23">
-                邀请赚钱0元购文案
-                <el-input v-model="invitationTwoDesc" style="width: 350px;" placeholder="请输入"></el-input>
-                邀请赚钱立赚6元文案
-                <el-input v-model="invitationThreeDesc" style="width: 350px;" placeholder="请输入"></el-input>
-
-
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="23">
-                <!-- TAOLIJIN_APPKEY-->
-                淘礼金appKey
-                <el-input v-model="appKey" style="width: 350px;" placeholder="请输入"></el-input>
-                <!--TAOLIJIN_ADZONEID-->
-                淘礼金广告位adzone_id
-                <el-input v-model="adzoneId" style="width: 350px;" placeholder="请输入"></el-input>
-
-
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="23">
-                <!--TAOLIJIN_SECRET-->
-                淘礼金secret
-                <el-input v-model="appSecret" style="width: 350px;" placeholder="请输入"></el-input>
-
-
-            </el-col>
-        </el-row>
-        <el-button type="primary" @click="updateData" style="float: right;">保存</el-button>
-
-
-    </div>
+         <!-- 编辑弹出框 -->
+			<el-dialog :title="judgeTitle"
+						:visible.sync="editVisible"
+						
+						 width="40%">
+					<el-form :model="form"
+							label-width="140px"
+							style="width: 70%;margin: 0 auto;">
+							
+						<el-form-item class="label_awarn" label="域名:" >
+							<el-input
+							  type="text"
+							  placeholder="请输入"
+							  v-model="form.shareUrl">
+							</el-input>
+						</el-form-item >
+						
+						
+						<el-form-item class="label_awarn" label="备注:" >
+							<el-input
+							  type="textarea"
+							  :rows="2"
+							  placeholder="remark"
+							  v-model="form.remark">
+							</el-input>
+						</el-form-item >
+							<el-form-item label="分享类型">
+							    <el-select v-model="form.shareType" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
+							         <el-option :key="itme.value" v-for="itme in platformTypeList" :label="itme.name"
+							                   :value="itme.value">{{itme.name}}
+							        </el-option>
+							    </el-select>
+							</el-form-item>
+							<el-form-item label="使用状态">
+							    <el-select v-model="form.useStatus" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
+							         <el-option :key="itme.value" v-for="itme in useStatusList" :label="itme.name"
+							                   :value="itme.value">{{itme.name}}
+							        </el-option>
+							    </el-select>
+							</el-form-item>
+						<el-form-item class="label_awarn" label="开始结束时间:" >
+							<el-date-picker
+							      v-model="StartEndTime"
+							      type="datetimerange"
+							      range-separator="至"
+							      start-placeholder="开始日期"
+							      end-placeholder="结束日期">
+							    </el-date-picker>
+						</el-form-item >	
+					</el-form-item>
+			
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="editVisible = false">取 消</el-button>
+					<el-button type="primary" @click="saveEdit">确 定</el-button>
+				</span>
+			</el-dialog>
+        
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt="">
+        </el-dialog>
+		
+		<!-- 删除提示框 -->
+		<el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+			<div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="delVisible = false">取 消</el-button>
+				<el-button type="primary" @click="deleteRow">确 定</el-button>
+			</span>
+		</el-dialog>
+		
+	</div>
 </template>
 
 <script>
-    import {post, get} from '../../../api/index';
-
+	import { deleteFile } from '@/api/OssUpload'
+	import Uploader from '@/components/common/Uploader'
+   import { post,get } from '../../../api/index';
     export default {
-        name: 'appPage',
+        name: 'centCommission',
+        components: {
+        	Uploader
+        },
         data() {
             return {
-                loginPage: 1,//登录界面
-                redPacket556: 1,//5.56红包弹窗
-                redPacketCross: 1,//5.56红包弹窗叉号是否打开
-
-                FirstLoginMissionShadowCross: 1,//首次登录，任务阴影界面叉号
-                taskPageCopyLinkAlertCross: 1,//任务界面，复制链接优惠弹框叉号
-                taskPageFirstPurchaseRedPacketAlertCross: 1,//任务界面，首购红包优惠弹窗叉号
-
-                confirmReceipt: 1,//确认收货
-                orderCloseAnAccount: 1,//订单结算
-
-                Free6Yuan: 1,//免单不算6元奖励
-                navigationBar: "",
-
-
-                loading: false,
-
-                invitationRedMoneyOrderpriceLimit: '',	// 邀请赚钱客单价限额
-                invitationRedMoneyAmount: '', //邀请赚钱红包金额
-                invitationRedMoneyExpireTime: '', //邀请赚钱红包收货后到账日期
-                newRedMoneyFixation: '', //新人红包固定金额
-                newRedMoneyInvalidTime: '', //新人红包失效日期
-                taskRedMoneyAmount: '', //任务红包金额
-                taskRedMoneyInvalidTime: '', //任务红包失效日期
-                taskRedMoneyExpireTime: '',//任务红包收货后到账日期
-                invitationTwoDesc: '', //邀请赚钱0元购文案
-                invitationThreeDesc: '', //邀请赚钱立赚6元文案
-                shareUrl: '',
-                shareUrlTwo: '',
-                shareUrlThree: '',
-                shareUrlFour: '',
-                shareUrlFive: '',
-                shareUrlTlj: '',
-                shareUrlTwoTlj: '',
-                shareUrlThreeTlj: '',
-                shareUrlFourTlj: '',
-                shareUrlFiveTlj: '',
-                zfbMoney: '',
-                appKey: '',
-                appSecret: '',
-                adzoneId: 0,
+                tableData: [],
+                cur_page: 1,
+                multipleSelection: [],
+                select_cate: '',
+                select_word: '',
+                del_list: [],
+                is_search: false,
+                editVisible: false,
+                delVisible: false,
+				dialogVisible: false,//图片放大
+				dialogImageUrl: "",//图片放大的url
+				
+                form: {
+					
+                    goodsPictureUrl: null,
+                	pictureDescription: "",
+					picType:"",
+					pictureStatus: "",
+					// companyId: "",
+					id:"",
+					noticeUrl:"",
+					thumbnailsUrl:"",
+					jumpType:"",
+					link: "",
+					sort: "",
+					moduleCode: "",
+					linkType: "",
+                	itemId: "",
+                },
+                // 保存一份旧数据，用于判断图片是否进行了修改
+                oldForm: {},
+				StartEndTime:null,
+				
+				fileListLength:0,//图片文件列表的长度
+				page:{
+					pageSize:20,
+					pageNum: 1,
+					total: 0,
+				},
+                idx: -1,
+                id: -1,
+				judge: "",
+				judgeTitle: "新增",
+				list:[],
+				pictureState:[
+					{ name: '未使用', value: 1 },
+					{ name: '使用', value: 2 },
+				],
+				platformTypeList:[
+				    {name: '分享赚', value: 0},
+				    {name: '邀请好友', value: 1},
+				],
+				useStatusList:[
+				    {name: '未使用', value: 0},
+				    {name: '使用中', value: 1},
+					 {name: '已被封', value: 2},
+					 {name: '已过期', value: 3},
+				],
             }
         },
         created() {
-            this.getData();
-            this.getRedPacketData();
-            this.getShareUrlData();
-            this.getZfbMoney();
-            this.getTljShareUrlData();
+            this.getData(1);
         },
-        computed: {},
+        computed: {
+            data() {
+                return this.tableData.filter((d) => {
+                    let is_del = false;
+                    return d
+                })
+            }
+        },
         methods: {
-            changeUpdate(id, state) {
-                // 点击单选框的时候触发的方法
-                console.log(state)
-                get("web/sySwitch/switchOff/update", {
-                    params: {
-                        switchId: id,
-                        state: state,
-                    }
-                })
-                    .then((data) => {
-                        if (data.data.status == 200) {
-                            // console.log(data.data.data)
-                            this.$message.success(data.data.msg);
-                            this.getData()
-
-                        } else {
-                            this.$message.error(data.data.msg);
-                            this.getData()
-                        }
-
-                    })
-                    .catch((error) => {
-                        this.getData()
-                        console.log(error);
-                    });
+            // 分页导航
+            handleCurrentChange(val) {
+                this.cur_page = val;
+                this.getData(val);
             },
-            getShareUrlData() {
-                //获取红包设置的数据
-                get("web/sySwitch/getShareUrl", {
-                    params: {}
+			
+            // 获取数据
+            getData(pageNum) {
+                let vue = this
+                get("server-admin/AdminDomainName/list",{
+                   params: {
+					    useStatus: vue.select_cate,
+                        pageNum:pageNum,
+                        pageSize: vue.page.pageSize,
+						}
+                   
                 })
-                    .then((data) => {
-
-                        this.shareUrl = data.data.data[0];
-                        this.shareUrlTwo = data.data.data[1];
-                        this.shareUrlThree = data.data.data[2];
-                        this.shareUrlFour = data.data.data[3];
-                        this.shareUrlFive = data.data.data[4];
-                        console.log(data.data.data)
-
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        console.log(error);
-                    });
-            },
-
-            getTljShareUrlData() {
-                //获取红包设置的数据
-                get("web/sySwitch/getTklShareUrl", {
-                    params: {}
+                .then(function (data) {
+                    let arr = []
+                    //一个数组用来接收加工后台传过来的数据
+                    console.log(data.data.data.list)
+					vue.tableData =   data.data.data.list
+					// vue.page.pageSize = data.data.data.pageSize;
+					vue.page.pageNum = data.data.data.pageNum;
+					
+					vue.page.total =  Number(data.data.data.total)
+					console.log(vue.tableData)
+                    
                 })
-                    .then((data) => {
-
-                        this.shareUrlTlj = data.data.data[0];
-                        this.shareUrlTwoTlj = data.data.data[1];
-                        this.shareUrlThreeTlj = data.data.data[2];
-                        this.shareUrlFourTlj = data.data.data[3];
-                        this.shareUrlFiveTlj = data.data.data[4];
-                        console.log(data.data.data)
-
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        console.log(error);
-                    });
+                .catch(function (error) {
+                    console.log(error);
+                });
             },
-
-            getZfbMoney() {
-                //获取红包设置的数据
-                get("web/sySwitch/getZfbMoney", {
-                    params: {}
+			/* //获取上传图片的参数
+			
+			dialogClose(){
+				console.log(this.$refs)
+				this.$refs.upload.clearFiles()
+			}, */
+			
+			funPictureStatus(value){
+				//平台
+				// console.log(value)
+				switch(value) {
+					 case 0:
+						return "未使用";
+					 case 1:
+						return "使用中";
+					 case 2:
+						return "已被封";
+					 case 3:
+						return "已过期";
+					 default:
+						return "未知";
+				}
+			},
+			enabledStatus(value){
+				switch(value) {
+					 case 1:
+						return "邀请好友";
+					 case 0:
+						return "分享赚";
+					 default:
+						return "未知";
+				}
+			},
+			
+            search() {
+                this.is_search = true;
+            },
+            formatter(row, column) {
+                return row.address;
+            },
+            filterTag(value, row) {
+                return row.tag === value;
+            },
+            handleEdit(index, row) {
+                
+				this.qiniuimage = null;
+                this.editVisible = true;
+				
+				if(this.$refs.upload){
+					if (this.$refs.upload.fileList.length == 0) {
+						let upload = document.getElementsByClassName("el-upload--picture-card");
+						upload[0].style.display = "inline-block";
+					}else{
+						this.$refs.upload.clearFiles()
+						let upload = document.getElementsByClassName("el-upload--picture-card");
+						upload[0].style.display = "inline-block";
+					}
+				}
+				
+				
+				if (index == 1) {
+					this.judge = index;
+					this.judgeTitle = "新增"
+					this.form = {
+						
+						shareUrl: "",
+						id:"",
+						remark: "",
+						useStatus: "",
+						shareType:"",
+					}
+					this.StartEndTime = null
+					
+				} else{
+					console.log(row)
+					this.judge = index;
+					this.judgeTitle = "编辑"
+					this.form = {
+						
+						shareUrl: row.shareUrl,
+						id:row.id,
+					    remark: row.remark,
+					    useStatus: row.useStatus,
+						shareType:row.shareType,
+					}
+					this.oldForm = JSON.parse(JSON.stringify(this.form))
+					this.dialogImageUrl = row.noticeUrl;
+					this.StartEndTime =  [ new Date(Number(new Date(row.startTime))) , new Date(Number(new Date(row.endTime)))],
+					//this.StartEndTime = [ new Date(Number(new Date(row.noticeBeginTime))) , new Date(Number(new Date(row.noticeEndTime)))]
+					console.log(this.StartEndTime)
+				}
+            },
+            handleDelete(index, row) {
+                // this.idx = index;
+                this.id = row.id;
+                this.oldForm = { noticeUrl: row.noticeUrl }
+                this.delVisible = true;
+            },
+            deleteRow() {
+				 this.delVisible = false;
+                post("server-admin/appNotice/insertOrUpdate",{
+						id: this.id,
+						delFlag: 1,
                 })
-                    .then((data) => {
+                .then((data) => {
+                	if (data.data.status == 200) {
 
-                        this.zfbMoney = data.data.data;
-
-                        console.log(data.data.data)
-
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        console.log(error);
-                    });
-            },
-
-            getData() {
-                // 获取数据
-                this.loading = true
-                get("web/sySwitch/switchOff/list", {
-                    params: {}
+                		// 删除旧图片
+						deleteFile(this.oldForm.noticeUrl).then(result => {
+							if (!result.success) {
+								this.$message.error(result.msg)
+							}
+						})
+                		
+                		this.$message.success("删除成功!");
+                		this.getData(1);
+                		
+                	} else{
+                		this.$message.error(data.data.msg);
+                	}
                 })
-                    .then((data) => {
-                        this.loading = false
-                        // console.log(data)
-                        for (let i = 0; i < data.data.data.length; i++) {
-                            // console.log(data.data.data[i])
-                            switch (Number(data.data.data[i].tableId)) {
-                                case 1:
-                                    //登录界面
-                                    console.log(data.data.data[i].tableId)
-                                    this.loginPage = data.data.data[i].state
-
-                                    break;
-                                case 2:
-                                    //5.56红包弹窗
-                                    this.redPacket556 = data.data.data[i].state
-
-                                    break;
-                                case 3:
-                                    //5.56红包弹窗叉号是否打开
-
-                                    this.redPacketCross = data.data.data[i].state
-                                    break;
-
-
-                                case 4:
-                                    //首次登录，任务阴影界面叉号
-                                    this.FirstLoginMissionShadowCross = data.data.data[i].state
-                                    break;
-
-                                case 5:
-                                    //任务界面，复制链接优惠弹框叉号
-                                    this.taskPageCopyLinkAlertCross = data.data.data[i].state
-                                    break;
-
-                                case 6:
-                                    //任务界面，首购红包优惠弹窗叉号
-                                    this.taskPageFirstPurchaseRedPacketAlertCross = data.data.data[i].state
-                                    break;
-
-
-                                case 7:
-                                    //确认收货
-                                    this.confirmReceipt = data.data.data[i].state
-                                    break;
-                                case 8:
-                                    //订单结算
-                                    this.orderCloseAnAccount = data.data.data[i].state
-                                    break;
-
-                                case 9:
-                                    //订单结算
-                                    this.Free6Yuan = data.data.data[i].state
-                                    break;
-
-                                case 11:
-                                    //导航栏
-                                    this.navigationBar = data.data.data[i].state
-                                    break;
-
-
-                                default:
-                                // console.log(data.data.data[i].tableId)
-                            }
-                        }
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        console.log(error);
-                    });
+                .catch(function (error) {
+                    console.log(error);
+                });
             },
-            getRedPacketData() {
-                //获取红包设置的数据
-                get("web/appUserRewardSetup/list", {
-                    params: {}
-                })
-                    .then((data) => {
-                        this.invitationRedMoneyOrderpriceLimit = data.data.data[0].invitationRedMoneyOrderpriceLimit;
-                        this.invitationRedMoneyAmount = data.data.data[0].invitationRedMoneyAmount;
-                        this.invitationRedMoneyExpireTime = data.data.data[0].invitationRedMoneyExpireTime;
-                        this.newRedMoneyFixation = data.data.data[0].newRedMoneyFixation;
-                        this.newRedMoneyInvalidTime = data.data.data[0].newRedMoneyInvalidTime;
-                        this.taskRedMoneyAmount = data.data.data[0].taskRedMoneyAmount;
-                        this.taskRedMoneyInvalidTime = data.data.data[0].taskRedMoneyInvalidTime;
-                        this.taskRedMoneyExpireTime = data.data.data[0].taskRedMoneyExpireTime;
-                        this.invitationTwoDesc = data.data.data[0].invitationTwoDesc;
-                        this.invitationThreeDesc = data.data.data[0].invitationThreeDesc;
-                        this.appKey = data.data.data[0].appKey;
-                        this.appSecret = data.data.data[0].appSecret;
-                        this.adzoneId = data.data.data[0].adzoneId;
-                        console.log(data.data.data[0])
-
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        console.log(error);
-                    });
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
             },
-            updateData() {
-                //保存红包设置
+			
+			
+            // 保存编辑
+            saveEdit() {
+                
+				
+				
+				if (this.form.shareUrl == null || this.form.shareUrl == ''){
+					console.log(this.form.shareUrl)
+					this.$message.error("请输入域名");
+					return "请输入域名"
+				}
+				
+				if (this.StartEndTime == null || this.StartEndTime == ''){
+					console.log(this.form.noticeUrl)
+					this.$message.error("请选择时间");
+					return "请选择时间"
+				}
+				
+				
+				
+				this.editVisible = false;
+               console.log(this.form)
+				post("server-admin/AdminDomainName/insertOrUpdate",{
+					
+					id: this.form.id,
+					shareType: this.form.shareType,
+					shareUrl: this.form.shareUrl,
+					remark:this.form.remark,
+					useStatus:this.form.useStatus,
+					startTime: this.timeTransition(this.StartEndTime[0]),
+					endTime: this.timeTransition(this.StartEndTime[1]),
+					
+				})
+				.then((data) => {
+					if (data.data.status == 200) {
 
-                if (this.zfbMoney == null || this.zfbMoney == "" || this.zfbMoney == undefined || !Number(this.zfbMoney)) {
-                    this.$message.warning("请填写正确的支付宝直接转账金额")
-                    return
-                }
-
-                post("web/appUserRewardSetup/update", {
-                    id: 1,
-                    invitationRedMoneyOrderpriceLimit: this.invitationRedMoneyOrderpriceLimit,	// 邀请赚钱客单价限额
-                    invitationRedMoneyAmount: this.invitationRedMoneyAmount, //邀请赚钱红包金额
-                    invitationRedMoneyExpireTime: this.invitationRedMoneyExpireTime, //邀请赚钱红包收货后到账日期
-                    newRedMoneyFixation: this.newRedMoneyFixation, //新人红包固定金额
-                    newRedMoneyInvalidTime: this.newRedMoneyInvalidTime, //新人红包失效日期
-                    taskRedMoneyAmount: this.taskRedMoneyAmount, //任务红包金额
-                    taskRedMoneyInvalidTime: this.taskRedMoneyInvalidTime, //任务红包失效日期
-                    taskRedMoneyExpireTime: this.taskRedMoneyExpireTime,//任务红包收货后到账日期
-                    invitationTwoDesc: this.invitationTwoDesc, //邀请赚钱0元购文案
-                    invitationThreeDesc: this.invitationThreeDesc, //邀请赚钱立赚6元文案
-                    shareUrl: this.shareUrl, //邀请赚钱立赚6元文案
-                    shareUrlTwo: this.shareUrlTwo,
-                    shareUrlThree: this.shareUrlThree,
-                    shareUrlFour: this.shareUrlFour,
-                    shareUrlFive: this.shareUrlFive,
-                    shareUrlTlj: this.shareUrlTlj,
-                    shareUrlTwoTlj: this.shareUrlTwoTlj,
-                    shareUrlThreeTlj: this.shareUrlThreeTlj,
-                    shareUrlFourTlj: this.shareUrlFourTlj,
-                    shareUrlFiveTlj: this.shareUrlFiveTlj,
-                    zfbMoney: this.zfbMoney,
-                    appKey: this.appKey,
-                    appSecret: this.appSecret,
-                    adzoneId: this.adzoneId,
-                })
-                    .then((data) => {
-                        if (data.data.status == 200) {
-                            // console.log(data.data.data)
-                            this.$message.success(data.data.msg);
-                            this.getRedPacketData()
-
-                        } else {
-                            this.$message.error(data.data.msg);
-                            this.getRedPacketData()
-                        }
-
-
-                        console.log(data.data)
-
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        console.log(error);
-                    });
-            },
-
+						this.$message.success("操作成功~");
+						this.getData(1);
+						
+					} else{
+						this.$message.error(data.data.msg);
+					}
+				})
+				.catch(function (error) {
+				    console.log(error);
+				});
+			},
+			handleSuccess (data) {
+				console.log(data)
+			},
+			
+			timeTransition(beginTime){
+				//转换时间
+				if (beginTime == null) {
+					return	'';
+				} else if(beginTime == ''){
+					return	'';
+				}
+				let d = new Date( Number(beginTime) );    //根据时间戳生成的时间对象
+				let date = (d.getFullYear()) + "-" + 
+						   (d.getMonth() + 1) + "-" +
+						   (d.getDate()) + " " + 
+						   (d.getHours()) + ":" + 
+						   (d.getMinutes()) + ":" + 
+						   (d.getSeconds());
+				return	date;
+			},
+			handlePictureCardPreview(file) {
+				//放大图片的钩子
+				this.dialogImageUrl = file.url;
+				this.dialogVisible = true;
+			},
         }
     }
 
 </script>
 
 <style scoped>
-    .appPage {
-        width: 80%;
-        margin: 0 auto;
-    }
-
-    .itme {
-        height: 50px;
-        line-height: 50px;
-    }
-
-    .el-row {
+    .handle-box {
         margin-bottom: 20px;
-
-    &
-    :last-child {
-        margin-bottom: 0;
     }
 
-    }
-    .el-col {
-        border-radius: 4px;
-    }
-
-    .bg-purple-dark {
-        background: #99a9bf;
+    .handle-select {
+        width: 120px;
     }
 
-    .bg-purple {
-        background: #d3dce6;
+    .handle-input {
+        width: 300px;
+        display: inline-block;
     }
-
-    .bg-purple-light {
-        background: #e5e9f2;
+    .del-dialog-cnt{
+        font-size: 16px;
+        text-align: center
     }
-
-    .grid-content {
-        border-radius: 4px;
-        min-height: 36px;
+    .table{
+        width: 100%;
+        font-size: 14px;
     }
-
-    .row-bg {
-        padding: 10px 0;
-        background-color: #f9fafc;
+    .red{
+        color: #ff0000;
+    }
+    .mr10{
+        margin-right: 10px;
+    }
+    .el-alert--info.is-dark{
+        margin: 0 0 18px 0;
     }
 </style>
 
 <style>
-    .appPage .el-alert--info.is-dark {
-        background-color: #ddd;
-        color: #000;
-    }
+	.label_awarn > .el-form-item__label::before {
+	display: inline-block;
+	margin-right: 4px;
+	color: #f5222d;
+	font-size: 14px;
+	font-family: SimSun, sans-serif;
+	line-height: 1;
+	content: '*';
+	}
 </style>
-
