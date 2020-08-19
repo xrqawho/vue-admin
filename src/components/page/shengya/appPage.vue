@@ -24,7 +24,7 @@
 			    <el-button type="primary" icon="el-icon-search" @click="getData(1)">搜索</el-button>
 			</div>
             <div class="handle-box">
-                <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">添加公告</el-button>
+                <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">添加域名</el-button>
                 
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">

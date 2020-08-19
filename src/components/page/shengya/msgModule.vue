@@ -21,6 +21,9 @@
                 <el-table-column prop="id" label="ID"  >
                 </el-table-column>
 				<el-table-column prop="messageType" label="消息类型"  >
+					<template slot-scope="scope">
+					    {{messageTypeMsg(scope.row.messageType)}}
+					</template>
 				</el-table-column>
                 <el-table-column prop="title" label="标题" >
                 </el-table-column>
@@ -185,9 +188,10 @@
 				judgeTitle: "新增",
 				list:[],
 				platformTypeList:[
-				    {name: '未登录弹窗', value: "1"},
-				    {name: '新人免单', value: "2"},
-					{name: '首单', value: "3"},
+				    {name: '支付宝提现', value: "1"},
+				    {name: '用户下单', value: "2"},
+					{name: '下级用户下单', value: "3"},
+					{name: '邀请好友', value: "4"},
 				],
             }
         },
@@ -264,7 +268,22 @@
 						return "未知";
 				}
 			},
-			
+			messageTypeMsg(value){
+				switch(value) {
+					 case "0":
+						return "其他";
+					 case "1":
+						return "支付宝提现";
+					 case "2":
+						return "用户下单";
+					 case "3":
+					 	return "下级用户下单";
+					case "4":
+						return "邀请好友";
+					 default:
+						return "未知";
+				}
+			},
             search() {
                 this.is_search = true;
             },
