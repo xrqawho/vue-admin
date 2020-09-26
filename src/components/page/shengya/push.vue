@@ -12,17 +12,17 @@
 
 		<el-form-item label="推送类型">
 		    <el-select v-model="jumpType" placeholder="请选择">
-				<el-option key="1" label="纯消息推送" :value="4001"></el-option>
-				<el-option key="2" label="html推送" :value="4002"></el-option>
-				<el-option key="3" label="消息界面推送" :value="4003"></el-option>
-				<el-option key="4" label="任务" :value="4004"></el-option>
-				<el-option key="5" label="免单" :value="4005"></el-option>
-				<el-option key="6" label="邀请" :value="4006"></el-option>
-				<el-option key="7" label="商品详情" :value="4007"></el-option>
-				<el-option key="8" label="饿了么弹窗" :value="5001"></el-option>
-				<el-option key="9" label="复制淘宝链接红包弹窗" :value="5002"></el-option>
-				<el-option key="10" label="首单红包弹窗" :value="5003"></el-option>
-				<el-option key="11" label="跳转首页" :value="5004"></el-option>
+				<el-option key="1" label="纯消息推送" :value="1"></el-option>
+				<el-option key="2" label="html推送(跳网页或者淘宝）" :value="2"></el-option>
+				<el-option key="3" label="消息界面推送" :value="3"></el-option>
+				<el-option key="4" label="任务" :value="4"></el-option>
+				<el-option key="5" label="免单" :value="5"></el-option>
+				<el-option key="6" label="邀请" :value="6"></el-option>
+				<el-option key="7" label="商品详情" :value="7"></el-option>
+				<el-option key="8" label="饿了么弹窗" :value="8"></el-option>
+				<el-option key="9" label="复制淘宝链接红包弹窗" :value="9"></el-option>
+				<el-option key="10" label="首单红包弹窗" :value="10"></el-option>
+				<el-option key="11" label="跳转首页" :value="11"></el-option>
 
 		    </el-select>
 		</el-form-item>
@@ -62,22 +62,22 @@
         </el-form-item>
 
 
-        <el-form-item label="跳转链接" v-if="jumpType == 4002">
+        <el-form-item label="跳转链接" v-if="jumpType == 2">
             <el-input v-model="form.jumpLink" placeholder="链接请以http://或者https://开头的"></el-input>
         </el-form-item>
 
-		<el-form-item label="跳转链接方式" v-if="jumpType == 4002">
+		<el-form-item label="跳转链接方式" v-if="jumpType == 2">
 		    <el-input v-model="form.jumpTaobao" placeholder="1:是跳淘宝 2:是跳外部"></el-input>
 		</el-form-item>
 
-		<el-form-item label="商品id" v-if="jumpType == 4007">
+		<el-form-item label="商品id" v-if="jumpType == 7">
 		    <el-input v-model="form.jumpLink" placeholder="商品id,推送跳转到那个商品"></el-input>
 		</el-form-item>
 
         <el-form-item label="公司">
             <el-select v-model="form.companyId" placeholder="请选择">
 				<el-option :key="0" label="全部" :value="0">全部</el-option>
-				<el-option v-for="itme in list" :key="itme.companyId" :label="itme.compayName" :value="itme.companyId">{{itme.compayName}}</el-option>
+				<el-option v-for="itme in list" :key="itme.accountId" :label="itme.accountName" :value="itme.accountId">{{itme.accountName}}</el-option>
             </el-select>
         </el-form-item>
 
@@ -124,7 +124,7 @@
 				date:'',
 				time:'',
 				list:[],
-				jumpType: 4001,
+				jumpType: 1,
 				pickerOptionsStop: {//截止时间的校验
 					disabledDate(time) {
 					     return time.getTime() < Date.now()-8.64e7;
@@ -159,15 +159,15 @@
                 console.log('submit!');
             },
 			getCompanyData(){
-				get("web/find/commpany/list",{
+				get("server-user/company/getCompanyList",{
 					params:{
 						currentPage: 1,
 						pageSize: 1000,
 					}
 				})
 				.then( (data) => {
-					console.log(data.data.data.list)
-					this.list =	data.data.data.list
+					console.log(data.data.data)
+					this.list =	data.data.data
 				})
 				.catch(function (error) {
 				    console.log(error);
@@ -216,8 +216,8 @@
 				}
 
 				console.log(this.form)
-				post("web/message/push/add",{
-					companyId: this.form.companyId,
+				post("server-admin/appPushMessage/addPushMessage",{
+					companyId: this.form.accountId,
 					content: this.form.content,
 					// create_time: new Date().getTime(),
 					jumpLink: this.form.jumpLink,

@@ -15,7 +15,7 @@
                 </el-table-column>
 				 <el-table-column prop="content" label="推送内容">
 				</el-table-column>
-				 <el-table-column prop="jump_link" label="跳转链接">
+				 <el-table-column prop="jumpLink" label="跳转链接">
 				</el-table-column>
                 <el-table-column prop="type" label="推送对象类型" >
 					<template slot-scope="scope">
@@ -27,19 +27,19 @@
 					     {{funPictureEnable(scope.row.enable)}}
 					 </template>
 				</el-table-column>
-				<el-table-column prop="create_time" label="创建时间" >
+				<el-table-column prop="createTime" label="创建时间" >
 					<template slot-scope="scope">
-					    {{formartDate(scope.row.create_time)}}
+					    {{formartDate(scope.row.createTime)}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="update_time" label="修改时间" >
+				<el-table-column prop="updateTime" label="修改时间" >
 					<template slot-scope="scope">
-					    {{formartDate(scope.row.update_time)}}
+					    {{formartDate(scope.row.updateTime)}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="jump_type" label="推送方式" >
+				<el-table-column prop="jumpType" label="推送方式" >
 					<template slot-scope="scope">
-					    {{funPictureJumpType(scope.row.jump_type)}}
+					    {{funPictureJumpType(scope.row.jumpType)}}
 					</template>
 				</el-table-column>
 				<el-table-column prop="push_time" label="定时推送时间" >
@@ -174,19 +174,19 @@
                 //     console.log(this.tableData)
                 // })
                 let vue = this
-                get("web/message/push/list",{
+                get("server-admin/appPushMessage/getPushMessageList",{
                     params: {
 											
                         currentPage: pageNum,
 						pageSize: vue.page.pageSize,
-						total: vue.page.total,
+						pageNum: vue.page.total,
                     }
                 })
                 .then(function (data) {
                     let arr = []
                     //一个数组用来接收加工后台传过来的数据
                     console.log(data.data.data.list)
-                    vue.tableData =   data.data.data.records;
+                    vue.tableData =   data.data.data;
 					
 					// vue.page.pageSize = Number(data.data.data.size);
 					vue.page.pageNum =  Number(data.data.data.current);
@@ -212,19 +212,19 @@
 				//平台
 				// console.log(value)
 				switch(value) {
-					case 4001:
+					case 1:
 						return "纯消息推送";
-					case 4002:
+					case 2:
 						return "html推送";
-					case 4003:
+					case 3:
 						return "消息界面推送";
-					case 4004:
+					case 4:
 						return "任务";
-					case 4005:
+					case 5:
 						return "免单";
-					case 4006:
+					case 6:
 						return "邀请";
-					case 4007:
+					case 7:
 						return "商品详情";
 					 default:
 						return "未知";
