@@ -2,7 +2,7 @@
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 推送列表 </el-breadcrumb-item> 
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 推送列表 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -10,7 +10,7 @@
                 <el-button type="primary" class="handle-del mr10" @click="addVisible = true">新增</el-button>
             </div> -->
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
-               
+
                 <el-table-column prop="title" label="推送标题">
                 </el-table-column>
 				 <el-table-column prop="content" label="推送内容">
@@ -52,7 +52,7 @@
 					    {{funPictureStatus(scope.row.status)}}
 					</template>
 				</el-table-column>
-                  
+
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                        <!-- <el-button type="text"  @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
@@ -68,7 +68,7 @@
 
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-			
+
             <el-form ref="form" :model="form" label-width="80px">
                 <el-form-item label="商品分类">
                     <el-input v-model="form.cname"></el-input>
@@ -77,17 +77,17 @@
                     <el-input v-model="form.sort"></el-input>
                 </el-form-item>
             </el-form>
-			
+
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editVisible = false">取 消</el-button>
                 <el-button type="primary" @click="saveEdit">确 定</el-button>
             </span>
         </el-dialog>
-		
-		
+
+
 		<!-- 新增弹出框 -->
 		<el-dialog title="新增" :visible.sync="addVisible" width="30%">
-			
+
 		    <el-form ref="form" :model="add" label-width="80px">
 		        <el-form-item label="商品分类">
 		            <el-input v-model="add.cname"></el-input>
@@ -96,7 +96,7 @@
 		            <el-input v-model="add.sort"></el-input>
 		        </el-form-item>
 		    </el-form>
-			
+
 		    <span slot="footer" class="dialog-footer">
 		        <el-button @click="addVisible = false">取 消</el-button>
 		        <el-button type="primary" @click="addClassify">确 定</el-button>
@@ -144,7 +144,7 @@
 					total: 0,
 				},
                 delId: '',//要删除的id
-				
+
             }
         },
         created() {
@@ -164,7 +164,7 @@
                 this.cur_page = val;
                 this.getData(val);
             },
-			
+
             // 获取数据
             getData(pageNum) {
                 // fetchData({
@@ -176,7 +176,7 @@
                 let vue = this
                 get("server-admin/appPushMessage/getPushMessageList",{
                     params: {
-											
+
                         currentPage: pageNum,
 						pageSize: vue.page.pageSize,
 						pageNum: vue.page.total,
@@ -186,10 +186,10 @@
                     let arr = []
                     //一个数组用来接收加工后台传过来的数据
                     console.log(data.data.data.list)
-                    vue.tableData =   data.data.data;
-					
+                    vue.tableData =   data.data.data.list;
+
 					// vue.page.pageSize = Number(data.data.data.size);
-					vue.page.pageNum =  Number(data.data.data.current);
+					vue.page.pageNum =  Number(data.data.data.pageNum);
 					vue.page.total =  Number(data.data.data.total)
                 })
                 .catch(function (error) {
@@ -202,10 +202,10 @@
 				switch(value) {
 					 case 1:
 						return "成功";
-					 case 0:
+					 case 2:
 						return "失败";
 					 default:
-						return "未知";
+						return "未推送";
 				}
 			},
 			funPictureJumpType(value){
@@ -243,10 +243,10 @@
 		  let h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours() // 时
 		  let m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes() // 分
 		  let s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds() // 秒
-			  
+
 		  // 一个函数只能有一个return，以下仅做示例
 		  return Y + '-' + M + '-' + D + ' ' + h + ':' + m + ':' + s // yyyy-mm-dd hh:mm:ss
-		 
+
 			},
 			funPictureEnable(value){
 				//平台
@@ -286,7 +286,7 @@
 						console.log(data.data.data)
 						this.$message.success(data.data.msg);
 						this.getData(1)
-						
+
 					} else{
 						this.$message.error(data.data.msg);
 					}
@@ -296,7 +296,7 @@
 				});
 			},
             handleEdit(index, row) {
-                
+
                 this.form = {
                     cname:row.cname,
 					sort:row.sort,
@@ -308,7 +308,7 @@
                 //打开删除dialog，并传参
 				this.delId = row.id;
                 this.delVisible = true;
-				
+
             },
             delAll() {
                 const length = this.multipleSelection.length;
@@ -334,7 +334,7 @@
 						console.log(data.data.data)
 						this.$message.success(data.data.msg);
 						this.getData(1)
-						
+
 					} else{
 						this.$message.error(data.data.msg);
 					}
@@ -345,9 +345,9 @@
             },
             // 确定删除
             deleteRow(){
-                
+
                 this.delVisible = false;
-                post("web/message/push/delete/"+this.delId,
+                post("server-admin/appPushMessage/deletePushMessageByIds/"+this.delId
 				)
                 .then( (data) => {
                     console.log(data.data.data)
@@ -355,7 +355,7 @@
                 		console.log(data.data.data)
                 		this.$message.success(data.data.msg);
                 		this.getData(1)
-                		
+
                 	} else{
                 		this.$message.error(data.data.msg);
                 	}

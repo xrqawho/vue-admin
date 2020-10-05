@@ -147,6 +147,11 @@ export default new Router({
                     meta: {title: '好物推荐'}
                 },
                 {
+                    path: '/sqTljList',
+                    component: resolve => require(['../components/page/shengya/taoBaoGift.vue'], resolve),
+                    meta: {title: '社群淘礼金'}
+                },
+                {
                     path: '/cashManagement',
                     component: resolve => require(['../components/page/shengya/cashManagement.vue'], resolve),
                     meta: {title: '支付宝提现'}

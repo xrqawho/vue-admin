@@ -326,9 +326,10 @@
             },
             //分页查询
             getData(pageNum) {
+                debugger;
                 this.loading = true;
                 let vue = this;
-                post("web/taobao/list", {
+                post("server-admin/tlj/getTljList", {
                     //params: {
                     itemId: this.itemId,
 
