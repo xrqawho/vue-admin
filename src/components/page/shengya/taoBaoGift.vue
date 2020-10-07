@@ -129,15 +129,26 @@
                         <!--<el-form-item label="淘礼金Url" v-if="addGift==1">
                             <el-input v-model="gift.giftUrl"></el-input>
                         </el-form-item>-->
-                        <el-form-item label="活动id" v-if="addGift==1">
-                            <el-input v-model="gift.activeId" style="width: 300px;"></el-input>
-                        </el-form-item>
                         <el-form-item label="淘礼金数量" v-if="addGift==1">
-                            <el-input v-model="gift.totalNum" style="width: 100px;"></el-input>
+                            <el-input v-model="gift.tljTotal" style="width: 100px;"></el-input>
                         </el-form-item>
 
                         <el-form-item label="淘礼金金额" v-if="addGift==1">
-                            <el-input v-model="gift.giftAmt" style="width: 100px;"></el-input>
+                            <el-input v-model="gift.tljPrice" style="width: 100px;"></el-input>
+                        </el-form-item>
+
+                        <el-form-item label="淘礼金类型" v-if="addGift==1">
+                        <el-select v-model="gift.campaignType" placeholder="请选择">
+                            <el-option key="1" label="相同路径" :value="1"></el-option>
+                            <el-option key="2" label="不同路径" :value="2"></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                        <el-form-item label="创建类型" v-if="addGift==1">
+                            <el-select v-model="gift.createType" placeholder="请选择">
+                                <el-option key="1" label="营销" :value="1"></el-option>
+                                <el-option key="2" label="定向" :value="2"></el-option>
+                            </el-select>
                         </el-form-item>
 
                         <el-form-item label="每人兑换次数" v-if="addGift==1">
@@ -152,12 +163,12 @@
                             <el-input v-model="gift.giftlable" style="width: 150px;"></el-input>
                         </el-form-item>
 
-                        <el-form-item label="排序" v-if="addGift==1">
+                        <!--<el-form-item label="排序" v-if="addGift==1">
                             <el-input v-model="gift.itemRanking"
                                       type="text"
                                       placeholder="请输入0到10之间的数"
                                       style="width: 100px;"></el-input>
-                        </el-form-item>
+                        </el-form-item>-->
 
                         <el-form-item label="状态" v-if="addGift==1">
                             <el-select v-model="gift.giftStatus" placeholder="请选择" class="handle-select mr10">
@@ -326,7 +337,6 @@
             },
             //分页查询
             getData(pageNum) {
-                debugger;
                 this.loading = true;
                 let vue = this;
                 post("server-admin/tlj/getTljList", {

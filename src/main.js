@@ -40,7 +40,7 @@ router.beforeEach((to, from, next) => {
         // 不是以上情况，正常进入相应路由
          next();
 
-    }
+    }commpany/list
 })
 
 function open6(msg) {
