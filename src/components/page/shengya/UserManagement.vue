@@ -35,7 +35,8 @@
 				
 				<el-table-column prop="totalAccount" label="可提现金额" >
 				</el-table-column>
-				
+				<el-table-column prop="vipAccount" label="总佣金" >
+				</el-table-column>
 				<el-table-column prop="inviteAccount" label="邀请总金额" >
 				</el-table-column>
 				

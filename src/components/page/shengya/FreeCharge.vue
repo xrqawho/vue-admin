@@ -28,8 +28,10 @@
                         <img id="goodsPicture" :src="scope.row.itemPictureUrl" alt="">
                     </template>
                 </el-table-column>
-                <el-table-column prop="itemTitle" label="商品名称">
+                <el-table-column prop="aliasDtitle" label="自定名称">
                 </el-table-column>
+				 <el-table-column prop="itemTitle" label="商品名称">
+				</el-table-column>
                 <el-table-column prop="itemId" width="120" label="商品ID">
                 </el-table-column>
                 <el-table-column prop="platformType" width="60" label="平台">
@@ -43,8 +45,9 @@
                 </el-table-column>
                 <el-table-column prop="totalRetureAmount" width="100" label="免单总金额">
                 </el-table-column>
-
-                <el-table-column prop="freeType" label="返利类型" :formatter="rebateFormatter">
+				<el-table-column prop="freeSort" width="100" label="排序">
+                </el-table-column>
+                <el-table-column prop="subsidyType" label="返利类型" :formatter="rebateFormatter">
                 </el-table-column>
                 <el-table-column show-overflow-tooltip prop="freeAccount" label="免单金额">
                 </el-table-column>
@@ -84,20 +87,11 @@
             <el-form :model="form"
                      label-width="80px"
                      style="width: 70%;margin: 0 auto;">
-					<el-form-item class="label_awarn" label="公告图片:">
-	
-							<uploader
-								dir="test/upload/img"
-								v-model="form.itemPictureUrl"
-								@upload-success="handleSuccess"
-							></uploader>
-						</el-form-item>
                 <el-form-item label="商品ID">
                     <el-input v-model="form.itemId" style="width: 150px;"></el-input>
                 </el-form-item>
-
-                <el-form-item label="商品名称">
-                    <el-input v-model="form.itemTitle" style="width: 250px;"></el-input>
+                <el-form-item label="自定名称">
+                    <el-input v-model="form.aliasDtitle" style="width: 250px;"></el-input>
                 </el-form-item>
 				 <el-form-item label="免单金额">
 				    <el-input v-model="form.freeAccount" style="width: 150px;"></el-input>
@@ -115,7 +109,7 @@
                 </el-form-item>
 
                 <el-form-item class="label_awarn" label="返利类型">
-                    <el-select v-model="form.freeType" placeholder="请选择" class="goodsPlatform mr10" style="width: 100px;">
+                    <el-select v-model="form.subsidyType" placeholder="请选择" class="goodsPlatform mr10" style="width: 100px;">
                         <el-option :key="itme.value" v-for="itme in linkTypeList" :label="itme.name"
                                    :value="itme.value">{{itme.name}}
                         </el-option>
@@ -205,11 +199,11 @@
                 form: {
                     endTime: null,//1566626222378
                     itemId: null,//"12341234"
-                    itemTitle: null,//"扫黄打非隧道口"
+                    aliasDtitle: null,//"扫黄打非隧道口"
                     itemPictureUrl: null,//1
                     platformType: null,//1
                     printUrl: null,//"http://qiniuimage.shenggongzi.cn/FlyQn6NIXoPLp-s9-uNO0VTONIjf"
-                    freeType: null,
+                    subsidyType: null,
                     freeAccount: 0,
                 },
                 page: {
@@ -264,7 +258,7 @@
                 get("server-admin/goodsFree/list", {
                     params: {
                         platformType: vue.select_cate,
-                        itemTitle: vue.select_word,
+                        aliasDtitle: vue.select_word,
 						itemId:vue.select_itemId,
                         pageNum: pageNum,
                         pageSize: vue.page.pageSize,
@@ -277,7 +271,8 @@
                         vue.tableData = data.data.data.data.map(list => {
                             let json = {
                                 "itemPictureUrl": list.itemPictureUrl,
-                                "itemTitle": list.itemTitle,
+                                "aliasDtitle": list.aliasDtitle,
+								itemTitle:list.itemTitle,
                                 "itemId": list.itemId,
                                 "platformType": list.platformType,
                                 "totalOrders": list.itemTotalNum,
@@ -289,7 +284,7 @@
                                 "freeSerialNumber": list.itemDetails,
                                 "id": list.id,
 								freeSort:list.freeSort,
-                                "freeType": list.freeType,
+                                "subsidyType": list.subsidyType,
 								"freeAccount":list.freeAccount
                             };
                             return json;
@@ -367,11 +362,11 @@
                    	beginTime:"",
                        endTime: "",
                        itemId: "",
-                       itemTitle:"",
+                       aliasDtitle:"",
                        itemPictureUrl:"",
                        platformType: "",
                        id: "",
-                       freeType: "",
+                       subsidyType: "",
                    	freeAccount:"",
                    	totalOrders:"",
                    }
@@ -385,11 +380,11 @@
 						beginTime:row.beginTime,
                         endTime: row.endTime,
                         itemId: row.itemId,
-                        itemTitle: row.itemTitle,
+                        aliasDtitle: row.aliasDtitle,
                         itemPictureUrl: row.itemPictureUrl,
                         platformType: row.platformType,
                         id: row.id,
-                        freeType: row.freeType,
+                        subsidyType: row.subsidyType,
 						freeAccount:row.freeAccount,
 						totalOrders:row.totalOrders,
                     }
@@ -402,7 +397,7 @@
             },
             handleDelete(index, row) {
                 // console.log(row)
-				 this.oldForm = { itemPictureUrl: row.itemPictureUrl }
+				// this.oldForm = { itemPictureUrl: row.itemPictureUrl }
                 this.delId = row.id;
                 this.form.itemId=row.itemId;
                 this.delVisible = true;
@@ -441,13 +436,13 @@
                     this.editVisible = false;
                     post("server-admin/goodsFree/insertOrUpdate",
                         {
-                        	activityBeginTime: this.form.beginTime,
-                        	activityEndTime:  this.form.endTime,
+                        	activityBeginTime: this.timeTransition(this.form.beginTime),
+                        	activityEndTime: this.timeTransition(this.form.endTime),
                         	itemId:  this.form.itemId,
-                        	itemTitle:  this.form.itemTitle,
+                        	aliasDtitle:  this.form.aliasDtitle,
                         	itemPictureUrl: this.form.itemPictureUrl,
                         	platformType:  this.form.platformType,
-                        	freeType:  this.form.freeType,
+                        	subsidyType:  this.form.subsidyType,
                         	freeAccount: this.form.freeAccount,
                         	itemTotalNum: this.form.totalOrders,
                         }
@@ -455,16 +450,17 @@
                         .then((data) => {
                             console.log(data)
                             if (data.data.status == 200) {
-                                this.$message.success(data.data.msg);
+								
+                                this.$message.success("新增成功~");
                                  this.form = {
                                 	beginTime:"",
                                     endTime: "",
                                     itemId: "",
-                                    itemTitle:"",
+                                    aliasDtitle:"",
                                     itemPictureUrl:"",
                                     platformType: "",
                                     id: "",
-                                    freeType: "",
+                                    subsidyType: "",
                                 	freeAccount:"",
                                 	totalOrders:"",
                                 }
@@ -489,10 +485,10 @@
                         	activityBeginTime: this.form.beginTime,
                         	activityEndTime:  this.form.endTime,
                         	itemId:  this.form.itemId,
-                        	itemTitle:  this.form.itemTitle,
+							 aliasDtitle: this.form.aliasDtitle,
                         	itemPictureUrl: this.form.itemPictureUrl,
                         	platformType:  this.form.platformType,
-                        	freeType:  this.form.freeType,
+                        	subsidyType:  this.form.subsidyType,
                         	freeAccount: this.form.freeAccount,
                         	itemTotalNum: this.form.totalOrders,
                         })
@@ -527,6 +523,7 @@
                         console.log(data)
                         if (data.data.status == 200) {
                             this.$message.success("删除成功~");
+							 this.getData(1);
 							// 删除旧图片
 							deleteFile(this.oldForm.itemPictureUrl).then(result => {
 								if (!result.success) {
@@ -534,7 +531,7 @@
 								}
 							})
                             this.sortVisible = false;
-                            this.getData(1);
+                           
                         } else {
                             this.$message.error(data.data.msg);
                         }
@@ -586,9 +583,9 @@
                     });
             },
             rebateFormatter(row, column) {
-                if (row.freeType == 1) {
+                if (row.subsidyType == 1) {
                     return "固定返";
-                } else if (row.freeType == 2) {
+                } else if (row.subsidyType == 2) {
                     return "淘礼金";
                 } else {
                     return null;
