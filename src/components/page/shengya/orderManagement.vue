@@ -89,10 +89,10 @@
 				 <el-table-column prop="returnGoodsTime" label="退货时间" >
 				
 				</el-table-column>
-				<el-table-column prop="hander" label="到账状态" >
+				<el-table-column prop="hander" label="处理状态" >
 					<template slot-scope="scope">
-						<span v-if="scope.row.hander == 0" style="color:#228B22">未到账</span>
-						<span v-if="scope.row.hander == 1" style="color:#F00;">已到账</span>
+						<span v-if="scope.row.hander == 0" style="color:#228B22">未处理</span>
+						<span v-if="scope.row.hander == 1" style="color:#F00;">已处理</span>
 					</template>
 				</el-table-column>
 				

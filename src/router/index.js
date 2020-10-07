@@ -106,6 +106,11 @@ export default new Router({
 				    component: resolve => require(['../components/page/shengya/appNotice.vue'], resolve),
 				    meta: { title: 'app首页公告' }
 				},
+				 {
+				    path: '/appBanner',
+				    component: resolve => require(['../components/page/shengya/appBanner.vue'], resolve),
+				    meta: { title: 'app首页Banner' }
+				},
 				{
 				    path: '/appPopupAndFloating',
 				    component: resolve => require(['../components/page/shengya/appPopupAndFloating.vue'], resolve),
@@ -340,6 +345,11 @@ export default new Router({
                     component: resolve => require(['../components/page//shengya/seckill.vue'], resolve),
                     meta: {title: '限时秒杀'}
                 },
+				 {
+				    path: '/appUserSignSetup',
+				    component: resolve => require(['../components/page//shengya/appUserSignSetup.vue'], resolve),
+				    meta: {title: '签到设置'}
+				},
                 {
                     path: '/greet',
                     component: resolve => require(['../components/page/greet.vue'], resolve),

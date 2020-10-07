@@ -329,7 +329,7 @@
                         console.log(data)
                         if (data.data.status == 200) {
                             console.log(data.data.data)
-                            this.$message.success(data.data.msg);
+                            this.$message.success("新增成功");
                             this.getData(1)
                             this.editVisible = false;
                         } else {

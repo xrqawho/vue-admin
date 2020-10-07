@@ -13,7 +13,7 @@
         </el-alert> -->
         <div class="container">
             <div class="handle-box">
-                <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">添加淘宝配置</el-button>
+                <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">添加配置</el-button>
                 <!--<el-button type="primary" class="handle-del mr10" @click="handleEditOne(1)">添加京东配置</el-button>
                 <el-button type="primary" class="handle-del mr10" @click="handleEditTwo(1)">添加拼多多配置</el-button>-->
                 <el-button @click="clearCache()" type="primary" class="handle-del mr10">一键清除缓存
@@ -21,63 +21,106 @@
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
 
-                <el-table-column prop="companyName" label="公司" width="150">
+                <el-table-column prop="userLevel" label="vip等级" width="150">
+					<template slot-scope="scope">
+					    {{enabledStatus(scope.row.userLevel)}}
+					</template>
                 </el-table-column>
 
-                <el-table-column prop="schemeName" label="分佣方案名称" width="120">
+                <el-table-column prop="startLevelTotalAmount" label="起始金额" width="120">
                 </el-table-column>
-
-                <el-table-column prop="schemeName" label="淘宝分佣方案" :formatter="formatter">
-                    <template slot-scope="scope">
-                        佣金小于等于：{{scope.row.onepay}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.onepayScale}}% 给客户<br>
-                        佣金小于等于：{{scope.row.twopay}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.twopayScale}}% 给客户<br>
-                        佣金小于等于：{{scope.row.thirdpay}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.thirdpayScale}}% 给客户<br>
-                        佣金小于等于：{{scope.row.forpay}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.forpayScale}}% 给客户<br>
-                        佣金小于等于：{{scope.row.fivepay}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.fivepayScale}}% 给客户<br>
-                        佣金小于等于：{{scope.row.sixpay}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.sixpayScale}}% 给客户<br>
-                        佣金小于等于：{{scope.row.sevenpay}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.sevenpayScale}}% 给客户<br>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="schemeName" label="京东分佣方案" :formatter="formatter">
-                    <template slot-scope="scope">
-                        佣金小于等于：{{scope.row.onepayJD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.onepayScaleJD}}% 给客户<br>
-                        佣金小于等于：{{scope.row.twopayJD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.twopayScaleJD}}% 给客户<br>
-                        佣金小于等于：{{scope.row.thirdpayJD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.thirdpayScaleJD}}% 给客户<br>
-                        佣金小于等于：{{scope.row.forpayJD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.forpayScaleJD}}% 给客户<br>
-                        佣金小于等于：{{scope.row.fivepayJD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.fivepayScaleJD}}%
-                        给客户<br>
-                        佣金小于等于：{{scope.row.sixpayJD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.sixpayScaleJD}}% 给客户<br>
-                        佣金小于等于：{{scope.row.sevenpayJD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.sevenpayScaleJD}}% 给客户<br>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="schemeName" label="拼多多分佣方案" :formatter="formatter">
-                    <template slot-scope="scope">
-                        佣金小于等于：{{scope.row.onepayPDD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.onepayScalePDD}}%
-                        给客户<br>
-                        佣金小于等于：{{scope.row.twopayPDD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.twopayScalePDD}}%
-                        给客户<br>
-                        佣金小于等于：{{scope.row.thirdpayPDD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.thirdpayScalePDD}}%
-                        给客户<br>
-                        佣金小于等于：{{scope.row.forpayPDD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.forpayScalePDD}}%
-                        给客户<br>
-                        佣金小于等于：{{scope.row.fivepayPDD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.fivepayScalePDD}}% 给客户<br>
-                        佣金小于等于：{{scope.row.sixpayPDD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.sixpayScalePDD}}%
-                        给客户<br>
-                        佣金小于等于：{{scope.row.sevenpayPDD}}元，&nbsp;&nbsp;&nbsp;&nbsp;分出总佣金{{scope.row.sevenpayScalePDD}}%
-                        给客户<br>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="address" label="代理分佣" :formatter="formatter">
-                    <template slot-scope="scope">
-                        佣金分给一级代理人：{{scope.row.oneAgentScale}}%<br>
-                    </template>
-                </el-table-column>
-
+				<el-table-column prop="endLevelTotalAmount" label="结束金额" width="120">
+				</el-table-column>
+				<el-table-column prop="onePay" label=" 佣金小于等于(1)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.onePay}} 元
+					</template>
+				</el-table-column>
+				<el-table-column prop="oneReturnProportion" label="分出总佣金比例(1)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.oneReturnProportion}} %
+					</template>
+				</el-table-column>
+				<el-table-column prop="twoPay" label=" 佣金小于等于(2)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.twoPay}} 元
+					</template>
+				</el-table-column>
+				<el-table-column prop="twoReturnProportion" label="分出总佣金比例(2)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.twoReturnProportion}} %
+					</template>
+				</el-table-column>
+				
+				<el-table-column prop="threePay" label=" 佣金小于等于(3)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.threePay}} 元
+					</template>
+				</el-table-column>
+				<el-table-column prop="threeReturnProportion" label="分出总佣金比例(3)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.threeReturnProportion}} %
+					</template>
+				</el-table-column>
+				
+				<el-table-column prop="fourPay" label=" 佣金小于等于(4)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.fourPay}} 元
+					</template>
+				</el-table-column>
+				<el-table-column prop="fourReturnProportion" label="分出总佣金比例(4)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.fourReturnProportion}} %
+					</template>
+				</el-table-column>
+				
+				<el-table-column prop="fivePay" label=" 佣金小于等于(5)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.fivePay}} 元
+					</template>
+				</el-table-column>
+				<el-table-column prop="fiveReturnProportion" label="分出总佣金比例(5)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.fiveReturnProportion}} %
+					</template>
+				</el-table-column>
+				
+					<el-table-column prop="sixPay" label=" 佣金小于等于(6)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.sixPay}} 元
+					</template>
+				</el-table-column>
+				<el-table-column prop="sixReturnProportion" label="分出总佣金比例(6)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.sixReturnProportion}} %
+					</template>
+				</el-table-column>
+				
+				<el-table-column prop="sevenPay" label=" 佣金小于等于(7)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.sevenPay}} 元
+					</template>
+				</el-table-column>
+				<el-table-column prop="sevenReturnProportion" label="分出总佣金比例(7)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.sevenReturnProportion}} %
+					</template>
+				</el-table-column>
+				
+				<el-table-column prop="eightPay" label=" 佣金小于等于(8)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.eightPay}} 元
+					</template>
+				</el-table-column>
+				<el-table-column prop="eightReturnProportion" label="分出总佣金比例(8)" width="120">
+					<template slot-scope="scope">
+					    {{scope.row.eightReturnProportion}} %
+					</template>
+				</el-table-column>
+				
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="handleEdit(2, scope.row)">淘宝编辑</el-button>
-                        <el-button type="text" @click="handleEditOne(2, scope.row)">京东编辑</el-button>
-                        <el-button type="text" @click="handleEditTwo(2, scope.row)">拼多多编辑</el-button>
+                        <el-button type="text" @click="handleEditTwo(2, scope.row)">编辑</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.row)">删除
                         </el-button>
 
@@ -410,7 +453,7 @@
                     sevenpayScalePDD: "", //7级分佣金额 比例
                 },
                 page: {
-                    pageSize: 10,
+                    pageSize: 50,
                     pageNum: 1,
                     total: 0,
                 },
@@ -422,7 +465,7 @@
         },
         created() {
             this.getData(1);
-            this.getCommpanyList();
+            //this.getCommpanyList();
         },
         computed: {
             data() {
@@ -443,7 +486,7 @@
             getData(pageNum) {
 
                 let vue = this
-                get("web/appGeneralfeescheme/findGeneralfeeschemeAll", {
+                get("server-admin/orderCommission/list", {
                     params: {
                         currentPage: pageNum,
                         pageSize: vue.page.pageSize,
@@ -467,7 +510,7 @@
                     });
 
             },
-            getCommpanyList() {
+           /* getCommpanyList() {
                 //获取公司数据
                 get("web/find/commpany/list", {
                     params: {
@@ -482,7 +525,7 @@
                     .catch(function (error) {
                         console.log(error);
                     });
-            },
+            }, */
             search() {
                 this.is_search = true;
             },
@@ -498,70 +541,75 @@
                     //编辑
                     this.judge = index;
                     this.form = {
-                        companyName: row.companyName,//公司名称
-                        companyId: row.companyId,//公司Id
-                        schemeName: row.schemeName,//分佣方案名称
+                        userLevel: row.userLevel,//公司名称
+                        startLevelTotalAmount: row.startLevelTotalAmount,//公司Id
+                        endLevelTotalAmount: row.endLevelTotalAmount,//分佣方案名称
                         //一级分佣
-                        onepay: row.onepay,//钱
+                        onePay: row.onePay,//钱
                         onepayScale: row.onepayScale,//比例
                         //二级分佣
-                        twopay: row.twopay,//钱
-                        twopayScale: row.twopayScale,//比例
+                        oneReturnProportion: row.oneReturnProportion,//钱
+                        twoPay: row.twoPay,//比例
                         //三级分佣
-                        thirdpay: row.thirdpay,//钱
-                        thirdpayScale: row.thirdpayScale,//比例
+                        twoReturnProportion: row.twoReturnProportion,//钱
+                        threePay: row.threePay,//比例
                         //四级分佣
-                        forpay: row.forpay,//钱
-                        forpayScale: row.forpayScale,//比例
+                        threeReturnProportion: row.threeReturnProportion,//钱
+                        fourPay: row.fourPay,//比例
                         //五级分佣
-                        fivepay: row.fivepay,//钱
-                        fivepayScale: row.fivepayScale,//比例
+                        fourReturnProportion: row.fourReturnProportion,//钱
+                        fivePay: row.fivePay,//比例
 
-                        oneAgentScale: row.oneAgentScale,//代理分佣
+                        fiveReturnProportion: row.fiveReturnProportion,//代理分佣
 
-                        generalFeeSchemeId: row.generalFeeSchemeId,//编辑识别ID
+                        sixPay: row.sixPay,//编辑识别ID
 
 
-                        sixpay: row.sixpay,//6级分佣金额
+                        sixReturnProportion: row.sixReturnProportion,//6级分佣金额
 
-                        sixpayScale: row.sixpayScale,//6级分佣金额 比例
+                        sevenPay: row.sevenPay,//6级分佣金额 比例
 
-                        sevenpay: row.sevenpay,//7级分佣金额
+                        sevenReturnProportion: row.sevenReturnProportion,//7级分佣金额
 
-                        sevenpayScale: row.sevenpayScale, //7级分佣金额 比例
+                        eightPay: row.eightPay, //7级分佣金额 比例
+						eightReturnProportion: row.eightReturnProportion,
                     }
                 } else {
                     //新增
                     this.judge = index;
                     this.form = {
-                        companyName: '',//公司名称
-                        companyId: '',//公司Id
-                        schemeName: '',//分佣方案名称
+                         userLevel: "",//公司名称
+                        startLevelTotalAmount: "",//公司Id
+                        endLevelTotalAmount: "",//分佣方案名称
                         //一级分佣
-                        onepay: '',//钱
-                        onepayScale: '',//比例
+                        onePay: "",//钱
+                        onepayScale: "",//比例
                         //二级分佣
-                        twopay: '',//钱
-                        twopayScale: '',//比例
+                        oneReturnProportion: "",//钱
+                        twoPay: row.twoPay,//比例
                         //三级分佣
-                        thirdpay: '',//钱
-                        thirdpayScale: '',//比例
+                        twoReturnProportion: row.twoReturnProportion,//钱
+                        threePay: row.threePay,//比例
                         //四级分佣
-                        forpay: '',//钱
-                        forpayScale: '',//比例
+                        threeReturnProportion: row.threeReturnProportion,//钱
+                        fourPay: row.fourPay,//比例
                         //五级分佣
-                        fivepay: '',//钱
-                        fivepayScale: '',//比例
-
-                        oneAgentScale: '',//代理分佣
-
-                        sixpay: "",//6级分佣金额
-
-                        sixpayScale: "",//6级分佣金额 比例
-
-                        sevenpay: "",//7级分佣金额
-
-                        sevenpayScale: "", //7级分佣金额 比例
+                        fourReturnProportion: row.fourReturnProportion,//钱
+                        fivePay: row.fivePay,//比例
+                        
+                        fiveReturnProportion: row.fiveReturnProportion,//代理分佣
+                        
+                        sixPay: row.sixPay,//编辑识别ID
+                        
+                        
+                        sixReturnProportion: row.sixReturnProportion,//6级分佣金额
+                        
+                        sevenPay: row.sevenPay,//6级分佣金额 比例
+                        
+                        sevenReturnProportion: row.sevenReturnProportion,//7级分佣金额
+                        
+                        eightPay: row.eightPay, //7级分佣金额 比例
+                        eightReturnProportion: row.eightReturnProportion,
 
                     }
                 }
@@ -693,11 +741,11 @@
              * 清除redis缓存
              */
             clearCache() {
-                post("web/appGeneralfeescheme/delGeneralfeeschemeAll")
+                get("server-admin/orderCommission/reflashOrderCommission")
                     .then((data) => {
                         console.log(data);
                         if (data.data.status == 200) {
-                            this.$message.success(data.data.msg);
+                            this.$message.success("清除成功");
                             this.getData()
                         } else {
                             this.$message.error(data.data.msg);
@@ -785,6 +833,18 @@
                     }
                 }
             },
+				enabledStatus(value){
+				switch(value) {
+					 case 2:
+						return "中级vip";
+					case 1:
+						return "初级vip";
+					 case 3:
+						return "高级vip";
+					 default:
+						return "未知";
+				}
+			},
             // 确定删除
             deleteRow() {
                 console.log(this.id)

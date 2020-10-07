@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// let base = "api"
+ //let base = "http://127.0.0.1:80/"
 
-let base = "http://127.0.0.1:80/"; //测试
+let base = "http://admin.kehaituo.com/"; //生产
 
 
 export const post = (url, query) => {

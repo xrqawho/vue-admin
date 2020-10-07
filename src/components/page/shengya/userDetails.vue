@@ -209,30 +209,34 @@
 		        stripe
 		        style="width: 100%">
 		        <el-table-column
-		          prop="userName"
-		          label="用户名"
+		          prop="companyId"
+		          label="公司"
 		          >
 		        </el-table-column>
 		    	
 		        <el-table-column
 		          prop="userRealName"
-		          label="姓名"
+		          label="真实姓名"
 		          width="100">
 				  
 		        </el-table-column>
-		    	
-		        <el-table-column
-		          prop=""
-		          label="推荐人">
-		        </el-table-column>
-		    	
 		    	<el-table-column
-		    	  prop="phoneNumber"
-		    	  label="手机号">
+		    	  prop="wechatNickname"
+		    	  label="微信姓名"
+		    	  width="100">
+		    	  
 		    	</el-table-column>
 		    	
 		    	<el-table-column
-		    	  prop="alipayAccount"
+		    	  prop="mobile"
+		    	  label="手机号">
+		    	</el-table-column>
+		    	<el-table-column
+		    	  prop="meInviteCode"
+		    	  label="邀请码">
+		    	</el-table-column>
+		    	<el-table-column
+		    	  prop="alipayAccountName"
 		    	  label="支付宝账号">
 		    	 
 		    	</el-table-column>
@@ -244,55 +248,38 @@
 				</el-table-column>
 				
 				<el-table-column
-				  prop="balance"
+				  prop="totalAccount"
 				  label="可提现金额">
 				 
 				</el-table-column>
 				
 				<el-table-column
-				  prop="totalWithdrawalAmount"
-				  label="总提现金额">
+				  prop="vipAccount"
+				  label="累计金额">
 				  
 				</el-table-column>
 				
 				<el-table-column
-				  prop="promoteAmount"
-				  label="推广金额">
+				  prop="inviteAccount"
+				  label="邀请金额">
 				  
 				</el-table-column>
 				
 				<el-table-column
-				  prop="orderNumber"
-				  label="订单数">
+				  prop="totalGoldNum"
+				  label="金币">
 				  
 				</el-table-column>
 				
-				<el-table-column
-				  prop=""
-				  label="上级对应ID">
-				  
-				</el-table-column>
-				
-				<el-table-column
-				  prop=""
-				  label="上级微信昵称">
-				  
-				</el-table-column>
 				
 				<el-table-column
 				  prop="userLastLoginTime"
 				  label="最近登录时间">
-					<template slot-scope="scope">
-					   <span>{{timeTransition(scope.row.userLastLoginTime)}}</span>
-					</template>
 				</el-table-column>
 		    	
 				<el-table-column
-				  prop="userCreateTime"
+				  prop="loginFirstDate"
 				  label="注册时间">
-						<template slot-scope="scope">
-						   <span>{{timeTransition(scope.row.userCreateTime)}}</span>
-						</template>
 				</el-table-column>
 		    	
 		      </el-table>
