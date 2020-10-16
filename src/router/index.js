@@ -159,7 +159,7 @@ export default new Router({
                 {
                     path: '/cashManagement',
                     component: resolve => require(['../components/page/shengya/cashManagement.vue'], resolve),
-                    meta: {title: '支付宝提现'}
+                    meta: {title: '提现明细'}
                 },
                 {
                     path: '/weixinCash',

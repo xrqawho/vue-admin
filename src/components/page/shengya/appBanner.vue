@@ -19,6 +19,13 @@
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                <el-table-column prop="id" label="ID">
                </el-table-column>
+			   <el-table-column prop="activityMaterialId" label="淘宝官方活动id">
+			   </el-table-column>
+			   <el-table-column prop="platformType" label="平台" >
+			   	<template slot-scope="scope">
+			   	    {{platformTypeStatus(scope.row.platformType)}}
+			   	</template>
+			   </el-table-column>
 				<el-table-column prop="bannerUrl" label="banner图片" >
 					<template slot-scope="scope">
 					 <img :src="scope.row.bannerUrl" width="150" height="150" class="head_pic"/>
@@ -70,7 +77,20 @@
 								@upload-success="handleSuccess"
 							></uploader>
 						</el-form-item>
-							
+							 <el-form-item label="平台">
+							    <el-select v-model="form.platformType" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
+							         <el-option :key="itme.value" v-for="itme in platformTypeList" :label="itme.name"
+							                   :value="itme.value">{{itme.name}}
+							        </el-option>
+							    </el-select>
+							</el-form-item>
+							<el-form-item class="label_awarn" label="淘宝官方活动ID:" >
+								<el-input
+								  type="text"
+								  placeholder="请输入"
+								  v-model="form.activityMaterialId">
+								</el-input>
+							</el-form-item >
 						<el-form-item class="label_awarn" label="排序:" >
 							<el-input
 							  type="text"
@@ -151,7 +171,11 @@
                 delVisible: false,
 				dialogVisible: false,//图片放大
 				dialogImageUrl: "",//图片放大的url
-				
+				platformTypeList:[
+					 {name: '淘宝', value: 0},
+				    {name: '京东', value: 2},
+					{name: '拼多多', value: 3},
+				],
                 form: {
 					
                     goodsPictureUrl: null,
@@ -263,7 +287,20 @@
 						return "未知";
 				}
 			},
-			
+			platformTypeStatus(value){
+			switch(value) {
+				case 0:
+					return "淘宝";
+				case 1:
+					return "淘宝";
+				 case 2:
+					return "京东";
+				 case 3:
+					return "拼多多";
+				 default:
+					return "未知";
+					}
+			},	
             search() {
                 this.is_search = true;
             },
@@ -297,6 +334,8 @@
 						
 						id:"",
 						onOff:0,
+						platformType:"",
+						activityMaterialId:"",
 						bannerUrl:"",
 						jumpType:"0",
 						jumpLink:"",
@@ -310,7 +349,8 @@
 					this.judge = index;
 					this.judgeTitle = "编辑"
 					this.form = {
-						
+						platformType:row.platformType,
+						activityMaterialId:row.activityMaterialId,
 						onOff: row.onOff,
 						id:row.id,
 					    bannerUrl: row.bannerUrl,
@@ -379,7 +419,8 @@
 				this.editVisible = false;
                console.log(this.form)
 				post("server-admin/adminAppBanner/insertOrUpdate",{
-					
+					platformType:this.form.platformType,
+					activityMaterialId:this.form.activityMaterialId,
 					id: this.form.id,
 					bannerUrl: this.form.bannerUrl,
 					jumpType: this.form.jumpType,

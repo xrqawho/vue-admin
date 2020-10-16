@@ -2,7 +2,7 @@
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 支付宝提现</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 提现明细</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -14,6 +14,12 @@
 					<el-option key="2" label="已处理" value="1"></el-option>
 					<el-option key="3" label="已拒绝" value="2"></el-option>
 				    <el-option key="4" label="全部" value=""></el-option>
+				</el-select>
+				 处理状态：
+				<el-select v-model="cashType" placeholder="请选择订单状态" class="handle-select mr10">
+				    <el-option key="1" label="微信" value="0"></el-option>
+					<el-option key="2" label="支付宝" value="1"></el-option>
+				    <el-option key="3" label="全部" value=""></el-option>
 				</el-select>
 				(申请时间)时间范围：
 				<el-date-picker
@@ -27,7 +33,7 @@
 				<el-input v-model="keyWord" placeholder="请输入关键字" class="handle-input mr10"></el-input>
 				<el-button type="primary" icon="el-icon-search" @click="getData(1)">搜索</el-button>
             </div>
-			<div class="handle-box" style="display: flex;height: 34px;">
+			<!-- <div class="handle-box" style="display: flex;height: 34px;">
 				<el-button type="small" @click="down()">下载信息<i class="el-icon-lx-down"></i></i></el-button>
 				<el-upload
 				 
@@ -40,11 +46,17 @@
 				  >
 				  <el-button size="small"  type="primary">点击上传</el-button>
 				</el-upload>
-			</div>
+			</div> -->
 			
 			
             <el-table v-loading="loading" :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 
+				  <el-table-column prop="cashType" label="平台" width="100" >
+					<template slot-scope="scope">
+					   <span v-if="scope.row.cashType == 0"  style="color:#993399">微信</span>
+					   <span v-if="scope.row.cashType == 1" style="color:#993399">支付宝</span>
+					</template>
+				</el-table-column>
                 <el-table-column prop="wechatNickname" label="微信昵称" sortable width="150">
 					
                 </el-table-column>
@@ -68,7 +80,6 @@
 					   <span v-if="scope.row.cashStatus == 2" style="color:#808080">失败</span>
 					</template>
                 </el-table-column>
-				
 				<el-table-column prop="beforeTotalAccount" label="提现前金额" width="150" align="center" >
 				</el-table-column>
 				<el-table-column prop="afterTotalAccount" label="提现后金额" width="150" align="center" >
@@ -216,6 +227,7 @@
                     wechatId: '',//微信id
 					amount: '',//提现金额
 					applicantStatus: '',//状态
+					cashType:'',
 					refuseReason:"",//拒绝原因
 					remark: '',//备注
 					applicantTime: '',//申请时间
@@ -237,6 +249,7 @@
                 id: -1,
 				
 				applicantStatus: null,
+				cashType:null,
 				keyWord: null,
 				//时间
 				time:null,
@@ -279,6 +292,7 @@
                 get("server-admin/zfbCashWithdrawal/list",{
                     params: {
                         cashStatus: this.applicantStatus,
+						cashType:this.cashType,
 						keyWord: this.keyWord,
 						startTime: this.timeTransition(startTime),
 						endTime: this.timeEndTransition(endTime), 
