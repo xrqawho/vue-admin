@@ -115,6 +115,7 @@
 							<label><input v-model="form.onOff" type="radio" value="0" >开</label>
 						</el-form-item >
 							<el-form-item class="label_awarn" label="跳转类型:" >
+								<label><input v-model="form.jumpType" type="radio" value="2" >不进行任何跳转</label>
 								<label><input v-model="form.jumpType" type="radio" value="1" >app外部跳转</label>
 								<label><input v-model="form.jumpType" type="radio" value="0" >app内部跳转</label>
 							</el-form-item >
@@ -269,6 +270,8 @@
 				//平台
 				// console.log(value)
 				switch(value) {
+					case 2:
+						return "不进行任何跳转";
 					 case 1:
 						return "外部跳转";
 					 case 0:

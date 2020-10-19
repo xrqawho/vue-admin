@@ -5,7 +5,9 @@ module.exports = {
     devServer: {
         proxy: {
            '/api': {
-               target: 'http://127.0.0.1:80/',
+			   /* 本地*/
+                target: 'http://127.0.0.1:80/', 
+			   /* 生产*/
                changeOrigin: false,
                pathRewrite: {
                    '/api': ''

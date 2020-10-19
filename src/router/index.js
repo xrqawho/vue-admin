@@ -208,9 +208,9 @@ export default new Router({
                     meta: {title: '渠道关系'}
                 },
                 {
-                    path: '/channelRelationshipList',
-                    component: resolve => require(['../components/page/shengya/channelRelationshipList.vue'], resolve),
-                    meta: {title: '渠道关系列表'}
+                    path: '/appUserPhone',
+                    component: resolve => require(['../components/page/shengya/appUserPhone.vue'], resolve),
+                    meta: {title: '用户手机号码'}
                 },
                 {
                     path: '/channelCount',
