@@ -331,6 +331,7 @@
 						jumpType:"0",
 						jumpLink:"",
 						remark: "",
+						noOff:0,
 					}
 					this.StartEndTime = null
 					

@@ -330,7 +330,7 @@
                 }
             },
             timeTransition(beginTime) {
-                let d = new Date(Number(beginTime));    //根据时间戳生成的时间对象
+                let d = new Date(beginTime);    //根据时间戳生成的时间对象
                 let date = (d.getFullYear()) + "-" +
                     (d.getMonth() + 1) + "-" +
                     (d.getDate()) + " " +
@@ -434,6 +434,7 @@
                     //新增
                     this.form.printUrl = this.qiniuimage;
                     this.editVisible = false;
+					
                     post("server-admin/goodsFree/insertOrUpdate",
                         {
                         	activityBeginTime: this.timeTransition(this.form.beginTime),
@@ -482,8 +483,8 @@
                     post("server-admin/goodsFree/insertOrUpdate", 
                         {
 							id:this.form.id,
-                        	activityBeginTime: this.form.beginTime,
-                        	activityEndTime:  this.form.endTime,
+                        	activityBeginTime: this.timeTransition(this.form.beginTime),
+                        	activityEndTime: this.timeTransition(this.form.endTime),
                         	itemId:  this.form.itemId,
 							 aliasDtitle: this.form.aliasDtitle,
                         	itemPictureUrl: this.form.itemPictureUrl,
