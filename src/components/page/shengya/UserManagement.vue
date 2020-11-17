@@ -135,7 +135,7 @@
             }
         },
         created() {
-            this.getData();
+            this.getData(1);
         },
         computed: {
             data() {
@@ -164,7 +164,7 @@
                 get("server-admin/appUser/findUserList",{
                     params: {
 						userName: vue.select_word,
-                        pageNum: vue.page.pageNum,
+                        pageNum: pageNum,
 						pageSize: vue.page.pageSize,
 						total: vue.page.total,
                     }
