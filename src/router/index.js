@@ -157,6 +157,11 @@ export default new Router({
                     meta: {title: '社群淘礼金'}
                 },
                 {
+                    path: '/limitGoodsList',
+                    component: resolve => require(['../components/page/shengya/limitGoods.vue'], resolve),
+                    meta: {title: '限时抢购'}
+                },
+                {
                     path: '/cashManagement',
                     component: resolve => require(['../components/page/shengya/cashManagement.vue'], resolve),
                     meta: {title: '提现明细'}

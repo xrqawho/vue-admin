@@ -3,7 +3,9 @@
         <div class="table">
             <div class="crumbs">
                 <el-breadcrumb separator="/">
-                    <el-breadcrumb-item><i class="el-icon-lx-cascades"></i>社群淘礼金</el-breadcrumb-item>
+                    <el-breadcrumb-item><i class="el-icon-lx-cascades"></i>
+                        限时抢购
+                    </el-breadcrumb-item>
                 </el-breadcrumb>
             </div>
 
@@ -31,8 +33,9 @@
                     </el-table-column>
                     <el-table-column prop="accountName" label="公司名称">
                     </el-table-column>
-
-                    <el-table-column prop="tljTotal" label="淘礼金总数量">
+                    <el-table-column prop="limitNum" label="虚拟创建份数">
+                    </el-table-column>
+                    <el-table-column prop="tljTotal" label="实际创建份数">
                     </el-table-column>
                     <!--<el-table-column prop="clickNum" label="点击兑换次数">
                     </el-table-column>-->
@@ -43,12 +46,12 @@
                     <el-table-column prop="tljPrice" label="淘礼金金额">
                     </el-table-column>
 
-                    <el-table-column prop="numOfPerson" label="每人兑换次数">
+                    <el-table-column prop="limitTime" label="限时点" style="color:red">
                     </el-table-column>
-                    <el-table-column prop="startDate" label="活动开始日期">
+                    <el-table-column prop="startDate" label="抢购开始日期">
                     </el-table-column>
 
-                    <el-table-column prop="endDate" label="活动结束日期">
+                    <el-table-column prop="endDate" label="抢购结束日期">
                     </el-table-column>
 
                     <el-table-column prop="status" label="状态">
@@ -76,28 +79,19 @@
                 <!--添加数量弹出框-->
                 <el-dialog title="添加" :visible.sync="saveTaotalNum" width="30%">
                     <el-form ref="addTljTotal" :model="gift">
-                        <el-form-item label="淘礼金数量">
+                        <el-form-item label="添加淘礼金数量">
                             <el-input v-model="gift.addNum" placeholder="不能为空"
                                       style="width:100px;height: 40px"></el-input>
                         </el-form-item>
-                        <el-form-item label="淘礼金开始结束时间">
-                            <el-date-picker
-                                    v-model="startEndDate"
-                                    :default-time="['00:00:00', '23:59:59']"
-                                    type="datetimerange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期">
-                            </el-date-picker>
-                        </el-form-item>
                         <el-button @click="saveTaotalNum = false">取 消</el-button>
+
                         <el-button type="primary" @click="saveTaoBaoTotalNum">确 定</el-button>
                     </el-form>
                 </el-dialog>
 
 
                 <!--添加弹出框-->
-                <el-dialog title="添加" :visible.sync="saveGift" width="40%">
+                <el-dialog title="添加" :visible.sync="saveLimitGood" width="40%">
                     <el-form ref="saveGiftForm" :model="gift" label-width="25%">
                         <el-form-item label="淘礼金类型" v-if="addGift==1">
                             <el-select v-model="gift.campaignType" placeholder="请选择">
@@ -107,13 +101,15 @@
                         </el-form-item>
                         <el-form-item label="选择公司">
                             <el-select v-model="gift.companyId" placeholder="请选择" @change="handleSelectionChange">
-                                <el-option :key="0" label="全部" :value="0">全部</el-option>
                                 <el-option v-for="itme in list" :key="itme.accountId" :label="itme.accountName"
                                            :value="itme.accountId">{{itme.accountName}}
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="淘礼金数量" v-if="addGift==1">
+                        <el-form-item label="虚拟总份数" v-if="addGift==1">
+                            <el-input v-model="gift.limitNum" style="width: 250px;"></el-input>
+                        </el-form-item>
+                        <el-form-item label="真实总份数" v-if="addGift==1">
                             <el-input v-model="gift.tljTotal" style="width: 250px;"></el-input>
                         </el-form-item>
                         <el-form-item label="商品id" v-if="addGift==1">
@@ -132,48 +128,26 @@
                             <el-input v-model="gift.numOfPerson" style="width: 250px;"></el-input>
                         </el-form-item>
 
-                        <el-form-item label="淘礼金开始结束时间" v-if="addGift==1">
+                        <el-form-item label="抢购日期">
                             <el-date-picker
                                     v-model="startEndDate"
-                                    :default-time="['00:00:00', '23:59:59']"
-                                    type="datetimerange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期">
-                            </el-date-picker>
-                        </el-form-item>
-
-                       <!-- <el-form-item label="活动开始结束时间" v-if="addGift==1">
-                            <el-date-picker
-                                    v-model="openFinishDate"
-                                    :default-time="['00:00:00', '23:59:59']"
-                                    type="datetimerange"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期">
-                            </el-date-picker>
-                        </el-form-item>-->
-
-                        <el-form-item label=时间类型>
-                            <el-radio-group v-model="isDs">
-                                <el-radio :label="1">立即创建</el-radio>
-                                <el-radio :label="2">定时创建</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
-                        <el-form-item label="定时时间" v-if="isDs == 2">
-                            <el-date-picker
-                                    v-model="gift.dsTime"
-                                    type="datetime"
-
+                                    type="date"
                                     :picker-options="pickerOptionsStop"
                                     placeholder="选择日期"
-                                    :default-time="new Date().getHours()+1+':'+'00:00'">
+                            >
                             </el-date-picker>
-                            (定时时间只能选择当前时间以后的时间)
+                        </el-form-item>
+
+                        <el-form-item label="抢购时间点">
+                            <el-select v-model="gift.limitId" placeholder="请选择" @change="handleSelectionLimitChange">
+                                <el-option v-for="itme in limitList" :key="itme.limitId" :label="itme.limitTime"
+                                           :value="itme.limitId">{{itme.limitTime}}
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-form>
                     <span slot="footer" class="dialog-footer">
-                <el-button @click="saveGift = false">取 消</el-button>
+                <el-button @click="saveLimitGood = false">取 消</el-button>
                 <el-button type="primary" @click="addSaveTaoBaoGift">确 定</el-button>
             </span>
                 </el-dialog>
@@ -262,12 +236,14 @@
                     endDate: '',
                     itemRanking: 1,
                     giftNum: '',
+                    limitNum: 5000,
                     clickNum: 0,
                     activeId: '',
                     companyId: '',
                     dsTime: '',
                     campaignType: '',
-                    addNum: 0
+                    addNum: 0,
+                    limitId: ''
                 },
                 startDate: new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
                 startEndDate: null,
@@ -275,9 +251,10 @@
                 addTaobaoGift: false,
                 saveTaotalNum: false,
                 loading: false,
-                addGift: '',
-                saveGift: false,
+                addGift: '1',
+                saveLimitGood: false,
                 list: [],
+                limitList: [],
                 pickerOptionsStop: {//截止时间的校验
                     disabledDate(time) {
                         return time.getTime() < Date.now() - 8.64e7;
@@ -292,13 +269,16 @@
                 },
                 isDs: 1,
                 companyData: [],
-                companyName:''
+                limitData: [],
+                companyName: '',
+                limitTime: ''
             }
         },
         created() {
             this.getData(1);
             //this.getTaoBaoGiftById();
-            this.getCompanyData()
+            this.getCompanyData();
+            this.getLimitTimeList();
         },
         computed: {
             data() {
@@ -310,10 +290,19 @@
         },
         methods: {
             handleSelectionChange(id) {
-                 this.companyData.find((item) =>{
-                    if(item.accountId == id){
+                this.companyData.find((item) => {
+                    if (item.accountId == id) {
                         this.companyName = item.accountName;
-                        return ;
+                        return;
+                    }
+
+                })
+            },
+            handleSelectionLimitChange(id) {
+                this.limitData.find((item) => {
+                    if (item.limitId == id) {
+                        this.limitTime = item.limitTime;
+                        return;
                     }
 
                 })
@@ -336,7 +325,7 @@
             getData(pageNum) {
                 this.loading = true;
                 let vue = this;
-                post("server-admin/tlj/getTljList", {
+                post("server-admin/limit/getLimitGoodsList", {
                     //params: {
                     itemId: this.itemId,
                     //分页
@@ -360,23 +349,13 @@
             },
             //添加
             add() {
-                this.loading = true
-                let startDate = null, endDate = null
-                let openDate = null, finishDate = null
-                let dsDate = ""
+                this.loading = true;
+                let startDate = null;
                 if (this.startEndDate) {
-                    startDate = this.timeTransition(this.startEndDate[0])
-                    endDate = this.timeTransition(this.startEndDate[1])
-                }
-                if (this.openFinishDate) {
-                    openDate = this.openFinishDate[0]
-                    finishDate = this.openFinishDate[1]
-                }
-                if (this.gift.dsTime){
-                    dsDate = this.timeTransition(this.gift.dsTime)
+                    startDate = this.timeTransition(this.startEndDate)
                 }
                 let vue = this;
-                post("server-admin/tlj/createNew", {
+                post("server-admin/limit/createLimitGoods", {
                     itemId: this.gift.itemId,
                     //giftUrl: this.gift.giftUrl,
                     tljTotal: this.gift.tljTotal,
@@ -385,18 +364,17 @@
                     createType: this.gift.createType,
                     numOfPerson: this.gift.numOfPerson,
                     startDate: startDate,
-                    endDate: endDate,
-                    openTime: startDate,
-                    finishTime: endDate,
-                    dsTime: dsDate,
                     campaignType: this.gift.campaignType,
                     accountId: this.gift.companyId,
-                    accountName: this.companyName
+                    accountName: this.companyName,
+                    limitId: this.gift.limitId,
+                    limitTime: this.limitTime,
+                    limitNum: this.gift.limitNum
                 }).then((data) => {
                     if (data.data.status == 200) {
                         this.$message.success(data.data.msg);
                         this.getData();
-                        this.saveGift = false;
+                        this.saveLimitGood = false;
                     } else {
                         this.loading = false;
                         this.$message.error(data.data.msg);
@@ -408,7 +386,7 @@
                 })
             },
             addEdit() {
-                this.saveGift = true;
+                this.saveLimitGood = true;
                 if (this.$refs.upload) {
                     if (this.$refs.upload.fileList.length == 0) {
                         let upload = document.getElementsByClassName("el-upload--picture-card");
@@ -487,7 +465,7 @@
             },
             addAPPTaobaoGift() {
                 this.loading = true,
-                    this.saveGift = false
+                    this.saveLimitGood = false
                 let startDate = null, endDate = null
                 if (this.startEndDate) {
                     startDate = this.startEndDate[0]
@@ -545,7 +523,7 @@
                         endDate: data.data.endDate,
                         finishTime: data.data.finishTime,
                         openTime: data.data.openTIme,
-                        dsTime : data.data.dsTime,
+                        dsTime: data.data.dsTime,
                         campaignType: data.data.campaignType,
                         accountId: data.data.accountId
                     };
@@ -567,28 +545,21 @@
                 });
             },
             saveTaobaoGift() {
-                this.saveGift = false;
+                this.saveLimitGood = false;
                 this.addTaobaoGift = false;
                 this.addAPPTaobaoGift();
                 //this.getData();
             },
             saveTaoBaoTotalNum() {
                 this.loading = true
-                let startDate = null, endDate = null
-                if (this.startEndDate) {
-                    startDate = this.startEndDate[0]
-                    endDate = this.startEndDate[1]
-                }
-                if (this.openFinishDate) {
-                    openTie = this.openFinishDate[0]
-                    finishTime = this.openFinishDate[1]
-                }
                 this.saveTaotalNum = false;
                 //alert("11111:"+this.gift.id)
                 get("server-admin/tlj/updateTljNum", {
-                    params: {tljId: this.gift.tljId,
-                    addNum: this.gift.addNum,
-                    accountId: this.gift.accountId}/*,
+                    params: {
+                        tljId: this.gift.tljId,
+                        addNum: this.gift.addNum,
+                        accountId: this.gift.accountId
+                    }/*,
                     startDate: this.timeTransition(startDate),
                     endDate: this.timeTransition(endDate)*/
                 }).then((data) => {
@@ -613,7 +584,7 @@
             },
             addSaveTaoBaoGift() {
 
-                this.saveGift = false;
+                this.saveLimitGood = false;
 
                 if (this.gift.itemId == null || this.gift.itemId == "") {
                     this.$message.error("商品ID不能为空");
@@ -690,6 +661,16 @@
                         console.log(error);
                     });
             },
+            getLimitTimeList() {
+                get("server-api/limit/getLimitTimeList",)
+                    .then((data) => {
+                        this.limitList = data.data.data;
+                        this.limitData = data.data.data;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
         },
     }
 </script>
