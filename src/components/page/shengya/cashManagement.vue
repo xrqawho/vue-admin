@@ -414,17 +414,19 @@
 				this.affirmForm = {
 					cashAccount: row.cashAccount,
 					id: row.id,
+					wxOrZfbType: row.cashType,
 					remark: row.remark,
 				}
             },
 			affirmMsg(){
 			//确认信息
 				this.affirmVisible = false;
-				get("server-admin/zfbCashWithdrawal/updateZfbAdoptOrRefuse",{
+				get("server-admin/zfbCashWithdrawal/updateZfbOrWxAdoptOrRefuse",{
                    params: {
                         id:this.affirmForm.id,
                         cashStatus:1,
 						remark:this.affirmForm.remark,
+						wxOrZfbType: this.affirmForm.wxOrZfbType,
 						}
                    
                 })

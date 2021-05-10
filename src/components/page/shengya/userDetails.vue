@@ -9,7 +9,7 @@
 			<h3>用户详情信息 </h3>
 			<div id="user">
 				<div>账号：{{user.username}}</div>
-				<div>昵称：{{user.userRealName}}</div>
+				<div>昵称：{{user.wechatNickname}}</div>
 				<div>头像：<img  :src="user.userImgUrl" alt=""></div>
 				<div>可提现金额： {{user.totalAccount}}</div>
 				<div>手机号：{{user.mobile}}</div>
@@ -31,7 +31,7 @@
 				<div>推荐人userId：{{superUser.userId}}</div>
 				<div>推荐人头像：<img  :src="superUser.userImgUrl" alt=""></div>
 				<div>推荐人账号：{{superUser.username}}</div>
-				<div>推荐人昵称：{{superUser.userRealName}}</div>
+				<div>推荐人昵称：{{superUser.wechatNickname}}</div>
 				<div>推荐人手机：{{superUser.mobile}}</div>
 				
 			</div>
@@ -149,36 +149,30 @@
 		        stripe
 		        style="width: 100%">
 		        <el-table-column
-		          prop="amount"
+		          prop="cashAccount"
 		          label="申请提现金额"
 		          >
 		        </el-table-column>
 		    	
 		        <el-table-column
-		          prop="applicantStatus"
+		          prop="cashStatus"
 		          label="状态"
 		          width="180">
 						<template slot-scope="scope">
-						    <span v-if="scope.row.applicantStatus == 1">未处理</span>
-						    <span v-if="scope.row.applicantStatus == 2">已处理</span>
-						    <span v-if="scope.row.applicantStatus == 3">已拒绝</span>
+						    <span v-if="scope.row.cashStatus == 0">待审核</span>
+						    <span v-if="scope.row.cashStatus == 1">成功</span>
+						    <span v-if="scope.row.cashStatus == 2">已拒绝</span>
 						</template>
 		        </el-table-column>
 		    	
 		        <el-table-column
-		          prop="applicantTime"
+		          prop="createDate"
 		          label="申请时间">
-				  <template slot-scope="scope">
-				     <span>{{timeTransition(scope.row.applicantTime)}}</span>
-				  </template>
 		        </el-table-column>
 		    	
 		    	<el-table-column
-		    	  prop="processingTime"
+		    	  prop="updateDate"
 		    	  label="处理时间">
-				  <template slot-scope="scope">
-				     <span>{{timeTransition(scope.row.processingTime)}}</span>
-				  </template>
 		    	</el-table-column>
 						
 		    	<el-table-column
@@ -502,7 +496,6 @@
 				console.log("数据："+data)
 					this.loading = false
 					this.withdrawalDetail = data.data.data.list
-					
 					this.MoneyDetailsPage.pageNum =  Number(data.data.data.pageSize);
 					this.MoneyDetailsPage.total =  Number(data.data.data.total);
 				})

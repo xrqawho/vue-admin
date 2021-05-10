@@ -12,10 +12,20 @@
             :closable="false">
         </el-alert>
         <div class="container">
-            <div class="handle-box">
+           <!-- <div class="handle-box">
                 <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">添加5眼</el-button>
-                
-            </div>
+            </div> -->
+			<div class="handle-box">
+			    <el-button type="primary" class="handle-del mr10" @click="handleEdit(1)">添加5眼</el-button>
+			    条件筛选 服务：
+			    <el-select v-model="select_cate" placeholder="请选择服务" class="handle-select mr10">
+			        <el-option key="0" label="老版本" value="0"></el-option>
+					<el-option key="1" label="新版本第一行" value="1"></el-option>
+					<el-option key="2" label="新版本第二行" value="2"></el-option>
+			     
+			    </el-select>
+			    <el-button type="primary" icon="el-icon-search" @click="getData(1)">搜索</el-button>
+			</div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 
                 <el-table-column prop="labelTitile" label="标题名称"  >
@@ -25,6 +35,26 @@
 					 <img :src="scope.row.labelUrl" width="150" height="150" class="head_pic"/>
 					 </template>
                 </el-table-column>
+				<el-table-column prop="labelIcon" label="头标">
+				</el-table-column>
+				<el-table-column prop="activityId" label="活动id">
+				</el-table-column>
+				<el-table-column prop="labelOfficial" label="是否官方活动" >
+					<template slot-scope="scope">
+					    {{labelOfficial(scope.row.labelOfficial)}}
+					</template>
+				</el-table-column>
+				<el-table-column prop="showRow" label="第几行">
+					<template slot-scope="scope">
+					    {{showRow(scope.row.showRow)}}
+					</template>
+				</el-table-column>
+				
+				<el-table-column prop="labelType" label="平台" >
+					<template slot-scope="scope">
+					    {{labelType(scope.row.labelType)}}
+					</template>
+				</el-table-column>
 				<el-table-column prop="sort" label="排序">
 				</el-table-column>
 				<el-table-column prop="jumpType" label="跳转类型" >
@@ -86,8 +116,20 @@
 							  v-model="form.sort">
 							</el-input>
 						</el-form-item >
-						
-						
+						<el-form-item label="平台">
+						    <el-select v-model="form.labelType" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
+						         <el-option :key="itme.value" v-for="itme in platformTypeList" :label="itme.name"
+						                   :value="itme.value">{{itme.name}}
+						        </el-option>
+						    </el-select>
+						</el-form-item>
+						<el-form-item label="行">
+						    <el-select v-model="form.showRow" placeholder="请选择" class="goodsPlatform mr10" style="width: 120px;">
+						         <el-option :key="itme.value" v-for="itme in showRowList" :label="itme.name"
+						                   :value="itme.value">{{itme.name}}
+						        </el-option>
+						    </el-select>
+						</el-form-item>
 						<el-form-item class="label_awarn" label="标题名称:" >
 							<el-input
 							  type="textarea"
@@ -96,7 +138,26 @@
 							  v-model="form.labelTitile">
 							</el-input>
 						</el-form-item >
-							
+							<el-form-item class="label_awarn" label="头标:" >
+								<el-input
+								  type="text"
+								  :rows="2"
+								  placeholder="请输入内容"
+								  v-model="form.labelIcon">
+								</el-input>
+							</el-form-item >
+							<el-form-item class="label_awarn" label="活动id:" >
+								<el-input
+								  type="textarea"
+								  :rows="2"
+								  placeholder="请输入内容"
+								  v-model="form.activityId">
+								</el-input>
+							</el-form-item >
+							<el-form-item class="label_awarn" label="是否官方活动:" >
+								<label><input v-model="form.labelOfficial" type="radio" value="0" >非官方活动</label>
+								<label><input v-model="form.labelOfficial" type="radio" value="1" >官方活动</label>
+							</el-form-item >
 							<el-form-item class="label_awarn" label="跳转类型:" >
 								<label><input v-model="form.jumpType" type="radio" value="0" >内部跳转</label>
 								<label><input v-model="form.jumpType" type="radio" value="1" >外部跳转</label>
@@ -160,7 +221,16 @@
                 delVisible: false,
 				dialogVisible: false,//图片放大
 				dialogImageUrl: "",//图片放大的url
-				
+				platformTypeList:[
+					 {name: '内部', value: 0},
+				    {name: '淘宝', value: 1},
+				    {name: '京东', value: 2},
+					{name: '拼多多', value: 3},
+					{name: '饿了么', value: 4},
+					{name: '美团', value: 5},
+					{name: '唯品会', value: 6},
+				],
+				showRowList:[{name:'老版本',value:0},{name:'新版本第一行',value:1},{name:'新版本第二行',value:2},],
                 form: {
 					
                     goodsPictureUrl: null,
@@ -222,6 +292,7 @@
                 let vue = this
                 get("server-admin/appLabel/list",{
                    params: {
+					   showRow:vue.select_cate,
                         pageNum:pageNum,
                         pageSize: vue.page.pageSize,
 						}
@@ -272,6 +343,47 @@
 						return "未知";
 				}
 			},
+			showRow(value){
+				switch(value) {
+					 case 1:
+						return "新版本第一行";
+					case 2:
+						return "新版本第二行";
+					 case 0:
+						return "老版本";
+					 default:
+						return "未知";
+				}
+			},
+			
+			labelType(value){
+				switch(value) {
+					 case 2:
+						return "京东";
+					 case 3:
+						return "拼多多";
+					case 4:
+						return "饿了么";
+					case 5:
+						return "美团";
+					case 6:
+						return "唯品会";
+					case 1:
+						return "淘宝";
+					 default:
+						return "内部";
+				}
+			},
+			labelOfficial(value){
+				switch(value) {
+					 case 1:
+						return "官方活动";
+					 case 0:
+						return "非官方活动";
+					 default:
+						return "未知";
+				}
+			},
 			
             search() {
                 this.is_search = true;
@@ -299,6 +411,10 @@
 						onOff: 1,
 						id:"",
 						labelUrl: "",
+						activityId:"",
+						labelOfficial:"0",
+						showRow:"",
+						labelIcon:"",
 						labelTitile: "",
 						sort: 0,
 					}
@@ -313,6 +429,11 @@
 						jumpType:row.jumpType,
 						onOff: row.onOff,
 						id:row.id,
+						labelType:row.labelType,
+						labelIcon:row.labelIcon,
+						showRow:row.showRow,
+						labelOfficial:row.labelOfficial,
+						activityId:row.activityId,
 					    labelUrl: row.labelUrl,
 					    labelTitile: row.labelTitile,
 						sort: row.sort,
@@ -389,6 +510,11 @@
 					labelUrl: this.form.labelUrl,
 					labelTitile: this.form.labelTitile,
 					sort: this.form.sort,
+					labelIcon:this.form.labelIcon,
+					showRow:this.form.showRow,
+					labelOfficial:this.form.labelOfficial,
+					activityId:this.form.activityId,
+					labelType:this.form.labelType,
 					
 				})
 				.then((data) => {
