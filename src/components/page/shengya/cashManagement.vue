@@ -448,11 +448,12 @@
             // 确定拒绝
             deleteRow(){
                this.affirmVisible = false;
-               get("server-admin/zfbCashWithdrawal/updateZfbAdoptOrRefuse",{
+               get("server-admin/zfbCashWithdrawal/updateZfbOrWxAdoptOrRefuse",{
                   params: {
                        id:this.affirmForm.id,
                        cashStatus:2,
                		remark:this.affirmForm.remark,
+					wxOrZfbType: this.affirmForm.wxOrZfbType
                		}
                   
                })
